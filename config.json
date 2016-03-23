@@ -1,0 +1,20 @@
+{
+	"name":"ObsiPlugin",
+	"slug":"obsi",
+	"nav":false,
+	"admin":true,
+	"author":"Eywek",
+	"version":"0.1.0",
+	"apiID":-1,
+	"useEvents":true,
+	"permissions" : {
+		"available" : ["CREATE_TEAMSPEAK_CHANNEL"],
+		"default" : {
+			"0": ["CREATE_TEAMSPEAK_CHANNEL"],
+			"2": ["CREATE_TEAMSPEAK_CHANNEL"]
+		}
+	},
+	"requirements" : {
+		"CMS" : ">= 1.0.0"
+	}
+}
