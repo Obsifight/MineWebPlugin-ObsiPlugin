@@ -5,6 +5,7 @@ class StatsController extends ObsiAppController {
   public $components = array('Obsi.GoogleAnalytics');
 
   public function index() {
+
     $this->set('title_for_layout', 'Statistiques');
 
     /*
@@ -133,17 +134,17 @@ class StatsController extends ObsiAppController {
       $connectedUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v5=1')[0][0]['COUNT(user_id)'];
       $registeredUsersThisWeek = $this->User->find('count', array(
         'conditions' => array(
-          'OR' => array(
+          'AND' => array(
             'created >=' => date('Y-m-d 00:00:00', strtotime('-1 week')),
-            'created <=' => date('Y-m-d 23:59:59'),
+            'created <=' => date('Y-m-d 23:59:59', strtotime('-1 week')),
           )
         )
       ));
       $totalUsers = $this->User->find('count');
 
-      $percentageRegisteredUsersOnV5 = round(($totalUsers * ( $registeredUsersOnV5 / 100 )), 2);
-      $percentageConnectedUsersOnV5 = round(($totalUsers * ( $connectedUsersOnV5 / 100 )), 2);
-      $percentageRegisteredUsersThisWeek = round(($totalUsers * ( $registeredUsersThisWeek / 100 )), 2);
+      $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2);
+      $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2);
+      $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2);
 
 
   /*
