@@ -96,6 +96,7 @@ class ObsiUserEventListener implements CakeEventListener {
       if($cache === false || !isset($cache[$user['id']])) {
         App::uses('ConnectionManager', 'Model');
         $con = new ConnectionManager;
+        ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
         $db = $con->getDataSource('Util');
         $launcherConnectionLogs = $db->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC');
 
@@ -121,6 +122,7 @@ class ObsiUserEventListener implements CakeEventListener {
           // On se connecte à la db
             App::uses('ConnectionManager', 'Model');
             $con = new ConnectionManager;
+            ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
             $db = $con->getDataSource('Auth');
 
           // On va récupérer les IPs actuelles
@@ -187,6 +189,7 @@ class ObsiUserEventListener implements CakeEventListener {
 
     App::uses('ConnectionManager', 'Model');
     $con = new ConnectionManager;
+    ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
     $db = $con->getDataSource('Auth');
 
     require ROOT.DS.'app'.DS.'Plugin'.DS.'Obsi'.DS.'Vendor'.DS.'UUID'.DS.'uuid.class.php';
@@ -224,6 +227,7 @@ class ObsiUserEventListener implements CakeEventListener {
 
     App::uses('ConnectionManager', 'Model');
     $con = new ConnectionManager;
+    ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
     $db = $con->getDataSource('Auth');
     // On va l'update
       $db->fetchAll('UPDATE joueurs SET user_mdp=? WHERE user_pseudo=?', array($password, $pseudo));
@@ -240,6 +244,7 @@ class ObsiUserEventListener implements CakeEventListener {
 
       App::uses('ConnectionManager', 'Model');
       $con = new ConnectionManager;
+      ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
       $db = $con->getDataSource('Auth');
       // On va l'update
         $db->fetchAll('UPDATE joueurs SET user_mdp=? WHERE user_pseudo=?', array($password, $pseudo));

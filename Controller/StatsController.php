@@ -128,6 +128,7 @@ class StatsController extends ObsiAppController {
     // Pourcentages
       App::uses('ConnectionManager', 'Model');
       $con = new ConnectionManager;
+      ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
       $db = $con->getDataSource('Auth');
 
       $registeredUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v5=1')[0][0]['COUNT(user_id)'];
@@ -220,7 +221,24 @@ class StatsController extends ObsiAppController {
     echo json_encode($result);
   }
 
-  public function user($user) {}
+  public function user($user) {
+
+    $findUser = $this->User->find('first', array('conditions' => array('pseudo' => $name)));
+    if(!empty($findUser)) {
+
+      App::uses('ConnectionManager', 'Model');
+      $con = new ConnectionManager;
+      ConnectionManager::create('LogBlock', Configure::read('Obsi.db.LogBlock'));
+      $db = $con->getDataSource('LogBlock');
+
+      $findUserLogs = $db->fetchAll('SELECT * FROM lb-players WHERE playername=:user', array('user' => $user));
+      debug($findUserLogs);
+
+    } else {
+      throw new NotFoundException();
+    }
+
+  }
 
   public function faction($faction) {}
 

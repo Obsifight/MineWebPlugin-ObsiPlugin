@@ -12,6 +12,7 @@ class ObsiguardController extends ObsiAppController {
       // On se connecte à la db
         App::uses('ConnectionManager', 'Model');
         $con = new ConnectionManager;
+        ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
         $db = $con->getDataSource('Auth');
 
       // On va mettre un array vide comme IP autorisées
@@ -39,6 +40,7 @@ class ObsiguardController extends ObsiAppController {
         // On se connecte à la db
           App::uses('ConnectionManager', 'Model');
           $con = new ConnectionManager;
+          ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
           $db = $con->getDataSource('Auth');
 
         // On va mettre NULL comme IP autorisées
@@ -69,6 +71,7 @@ class ObsiguardController extends ObsiAppController {
       // On se connecte à la db
         App::uses('ConnectionManager', 'Model');
         $con = new ConnectionManager;
+        ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
         $db = $con->getDataSource('Auth');
 
       // On va récupérer l'état actuel du mode
@@ -105,6 +108,7 @@ class ObsiguardController extends ObsiAppController {
             // On se connecte à la db
               App::uses('ConnectionManager', 'Model');
               $con = new ConnectionManager;
+              ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
               $db = $con->getDataSource('Auth');
 
             // On va récupérer les IPs actuelles
@@ -159,6 +163,7 @@ class ObsiguardController extends ObsiAppController {
         // On se connecte à la db
           App::uses('ConnectionManager', 'Model');
           $con = new ConnectionManager;
+          ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
           $db = $con->getDataSource('Auth');
 
         // On va récupérer les IPs actuelles

@@ -473,7 +473,7 @@ class UserController extends ObsiAppController {
                       // On effectue le changement sur la bdd de l'auth
                         App::uses('ConnectionManager', 'Model');
                         $con = new ConnectionManager;
-
+                        ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
                         $db = $con->getDataSource('Auth');
                         $db->fetchAll('UPDATE joueurs SET user_mdp=:user_mdp,user_pseudo=:user_pseudo WHERE user_pseudo=:old_pseudo', array(
                           'user_mdp' => $password,

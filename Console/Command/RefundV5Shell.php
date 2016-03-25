@@ -11,6 +11,13 @@ class RefundV5Shell extends AppShell {
       $itemsV4 = array('Kit destruction', 'Kit construction', 'Kit alchimiste', 'Kit enchantement', 'Kit druide', 'Kit explorateur', 'Kit minerai', 'Kit golden');
       $items = array_merge($itemsV2, $itemsV3, $itemsV4);
 
+			$global_refund = 0;
+			$time = microtime(true);
+
+			$usersData = array();
+			$refundHistoriesData = array();
+			$refundNotificationsData = array();
+
     $this->out('Démarrage du script...');
 
     // On tente de se connecter aux base de données
@@ -50,15 +57,18 @@ class RefundV5Shell extends AppShell {
 
 
     $users = $this->User->find('all'); // On prends tous les utilisateurs
+		$count = $this->User->find('count');
 
+		$i = 0;
     foreach ($users as $k => $v) { // On les parcours
+			$i++;
 
       $user_pseudo = $v['User']['pseudo'];
       $user_money = $v['User']['money'];
       $user_added_money = 0;
       $user_id = $v['User']['id'];
 
-      $this->out('- Player : '.$user_pseudo);
+      $this->out('- ['.$i.'/'.$count.'] Player : '.$user_pseudo);
 
       /*
         === V4 ===
@@ -73,18 +83,18 @@ class RefundV5Shell extends AppShell {
 
           if(in_array($value['other'], $itemsV4)) { // Si l'article est parmis ceux remboursables
 
-            $findItem = $bdd_V4->prepare('SELECT price FROM items WHERE id=:id LIMIT 1');
-            $findItem->execute(array('id' => $value['id']));
+            $findItem = $bdd_V4->prepare('SELECT id,name,price FROM items WHERE name=:name LIMIT 1');
+            $findItem->execute(array('name' => $value['other']));
             $findItem = $findItem->fetch();
             if(!empty($findItem)) { // Si on trouve l'article acheté
 
-              $this->out('    Remboursé à la V4 ('.$findItem['price'].')');
+              $this->out('    Remboursé à la V4 ('.$findItem['price'].' PB - ID: '.$findItem['id'].' - "'.$findItem['name'].'")');
 
               $refunded = true;
               $user_added_money += $findItem['price']; // On ajoute son prix aux pbs à add à l'user
 
             } else {
-              $this->out('    Erreur article non trouvé (V4) ! (ID: '.$value['id'].')');
+              $this->out('    Erreur article non trouvé (V4) ! (ID: '.$value['other'].')');
             }
             unset($findItem);
 
@@ -108,24 +118,24 @@ class RefundV5Shell extends AppShell {
           // On récupère l'historique d'achats lors de la V3 parmis les achats récupérables
             $findPlayerHistoriesInV3 = $bdd_V3->prepare("SELECT * FROM historique WHERE joueur=:user_pseudo");
             $findPlayerHistoriesInV3->execute(array('user_pseudo' => $user_pseudo));
-            $findPlayerHistoriesInV3 = $findPlayerHistoriesInV2->fetchAll();
+            $findPlayerHistoriesInV3 = $findPlayerHistoriesInV3->fetchAll();
 
             foreach ($findPlayerHistoriesInV3 as $key => $value) { // On parcours ses achats
 
               if(in_array($value['nom_offre'], $itemsV3)) { // Si l'article est parmis ceux remboursables
 
-                $findItem = $bdd_V2->prepare('SELECT prix FROM boutique WHERE id=:id LIMIT 1');
-                $findItem->execute(array('id' => $value['id']));
+                $findItem = $bdd_V2->prepare('SELECT id,nom,prix FROM boutique WHERE id=:id LIMIT 1');
+                $findItem->execute(array('id' => $value['nom_offre']));
                 $findItem = $findItem->fetch();
                 if(!empty($findItem)) { // Si on trouve l'article acheté
 
-                  $this->out('    Remboursé à la V2 ('.$findItem['prix'].')');
+                  $this->out('    Remboursé à la V3 ('.$findItem['prix'].' PB - ID: '.$findItem['id'].' - "'.$findItem['nom'].'")');
 
                   $refunded = true;
                   $user_added_money += $findItem['prix']; // On ajoute son prix aux pbs à add à l'user
 
                 } else {
-                  $this->out('    Erreur article non trouvé (V3) ! (ID: '.$value['id'].')');
+                  $this->out('    Erreur article non trouvé (V3) ! (ID: '.$value['nom_offre'].')');
                 }
                 unset($findItem);
 
@@ -158,18 +168,18 @@ class RefundV5Shell extends AppShell {
 
               if(in_array($value['nom_offre'], $itemsV2)) { // Si l'article est parmis ceux remboursables
 
-                $findItem = $bdd_V2->prepare('SELECT prix FROM boutique WHERE id=:id LIMIT 1');
-                $findItem->execute(array('id' => $value['id']));
+                $findItem = $bdd_V2->prepare('SELECT id,nom,prix FROM boutique WHERE id=:id LIMIT 1');
+                $findItem->execute(array('id' => $value['nom_offre']));
                 $findItem = $findItem->fetch();
                 if(!empty($findItem)) { // Si on trouve l'article acheté
 
-                  $this->out('    Remboursé à la V2 ('.$findItem['prix'].')');
+                  $this->out('    Remboursé à la V2 ('.$findItem['prix'].' PB - ID: '.$findItem['id'].' - "'.$findItem['nom'].'")');
 
                   $refunded = true;
                   $user_added_money += $findItem['prix']; // On ajoute son prix aux pbs à add à l'user
 
                 } else {
-                  $this->out('    Erreur article non trouvé (V2) ! (ID: '.$value['id'].')');
+                  $this->out('    Erreur article non trouvé (V2) ! (ID: '.$value['nom_offre'].')');
                 }
                 unset($findItem);
 
@@ -187,29 +197,34 @@ class RefundV5Shell extends AppShell {
         === Historique & ajouts de points & notifications ===
       */
 
-        if($refunded) {
+        if(isset($refunded) && $refunded) {
 
           $this->out('    Remboursé au total de : '.$user_added_money);
 
           $user_new_sold = $user_money + $user_added_money;
 
+					$global_refund += $user_added_money;
+
           $this->User->read(null, $user_id);
           $this->User->set(array('money' => $user_new_sold));
-          $this->User->save();
+          //$this->User->save();
+
 
           $this->RefundHistory->create();
           $this->RefundHistory->set(array(
             'user_id' => $user_id,
             'added_money' => $user_added_money
           ));
-          $this->RefundHistory->save();
+          //$this->RefundHistory->save();
+
 
           $this->RefundsNotification->create();
           $this->RefundsNotification->set(array(
             'user_id' => $user_id,
             'refund_id' => $this->RefundHistory->getLastInsertId()
           ));
-          $this->RefundsNotification->save();
+          //$this->RefundsNotification->save();
+
 
         } else {
           $this->out('    Non remboursé.');
@@ -220,6 +235,10 @@ class RefundV5Shell extends AppShell {
       unset($user_id);
 
     }
+
+		$this->out("\n\n");
+		$this->out('Time: '.(microtime(true)-$time).' sec.');
+		$this->out('Total remboursé : '.$global_refund.' PB');
 
   }
 
