@@ -92,23 +92,17 @@ class ObsiUserEventListener implements CakeEventListener {
         Logs de connexion
       */
 
-      $cache = Cache::read('connection', 'launcherlogs');
-      if($cache === false || !isset($cache[$user['id']])) {
+      $cache = Cache::read('connection_'.$user['id'], 'launcherlogs');
+      if($cache === false) {
         App::uses('ConnectionManager', 'Model');
         $con = new ConnectionManager;
         ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
         $db = $con->getDataSource('Util');
         $launcherConnectionLogs = $db->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC');
 
-        if($cache === false) {
-          $cacheData = array($user['id'] => $launcherConnectionLogs);
-        } else {
-          $cache[$user['id']] = $launcherConnectionLogs;
-          $cacheData = $cache;
-        }
-        Cache::write('connection', $cacheData, 'launcherlogs');
+        Cache::write('connection_'.$user['id'], $launcherConnectionLogs, 'launcherlogs');
       } else {
-        $launcherConnectionLogs = $cache[$user['id']];
+        $launcherConnectionLogs = $cache;
       }
 
       ModuleComponent::$vars['launcherConnectionLogs'] = $launcherConnectionLogs;
@@ -172,6 +166,25 @@ class ObsiUserEventListener implements CakeEventListener {
         ModuleComponent::$vars['EmailUpdateRequestResponse'] = array('msg' => $msg, 'type' => $type);
       }
 
+      /*
+        Notifications de remboursement
+      */
+      $RefundsNotificationModel = ClassRegistry::init('Obsi.RefundsNotification');
+      $findRefundNotif = $RefundsNotificationModel->find('first', array('conditions' => array('user_id' =>  $user['id'])));
+      if(!empty($findRefundNotif)) {
+
+        $RefundsModel = ClassRegistry::init('Obsi.RefundHistory');
+        $findRefund = $RefundsModel->find('first', array('conditions' => array('id' => $findRefundNotif['RefundsNotification']['refund_id'])));
+        if(!empty($findRefund)) {
+
+          $RefundsNotificationModel->delete($findRefundNotif['RefundsNotification']['id']);
+
+          $msg = 'Vous avez été remboursé de '.$findRefund['RefundHistory']['added_money'].' PB pour vos achats de kits au cours des dernières versions !';
+          ModuleComponent::$vars['RefundNotification'] = $msg;
+
+        }
+      }
+
     }
 
   }
@@ -215,6 +228,7 @@ class ObsiUserEventListener implements CakeEventListener {
 
     App::uses('ConnectionManager', 'Model');
     $con = new ConnectionManager;
+    ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
     $db = $con->getDataSource('Auth');
     // On va l'update
       $db->fetchAll('UPDATE joueurs SET user_mdp=? WHERE user_pseudo=?', array($password, $pseudo));

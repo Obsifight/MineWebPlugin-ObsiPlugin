@@ -332,8 +332,13 @@ class UserController extends ObsiAppController {
         $this->loadModel('Obsi.EmailUpdateRequest');
         $requests = $this->EmailUpdateRequest->find('all');
 
+        $usersToFind = array();
+        foreach ($requests as $key => $value) {
+          $usersToFind[] = $value['EmailUpdateRequest']['user_id'];
+        }
+
         $usersByID = array();
-        $findUsers = $this->User->find('all');
+        $findUsers = $this->User->find('all', array('conditions' => array('id' => $usersToFind)));
         foreach ($findUsers as $key => $value) {
           $usersByID[$value['User']['id']] = $value['User']['pseudo'];
         }

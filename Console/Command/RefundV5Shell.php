@@ -12,6 +12,7 @@ class RefundV5Shell extends AppShell {
       $items = array_merge($itemsV2, $itemsV3, $itemsV4);
 
 			$global_refund = 0;
+			$users_refunded = 0;
 			$time = microtime(true);
 
 			$usersData = array();
@@ -197,7 +198,9 @@ class RefundV5Shell extends AppShell {
         === Historique & ajouts de points & notifications ===
       */
 
-        if(isset($refunded) && $refunded) {
+        if(isset($refunded) && $refunded && $user_added_money > 0) {
+
+					$users_refunded++;
 
           $this->out('    Remboursé au total de : '.$user_added_money);
 
@@ -207,7 +210,7 @@ class RefundV5Shell extends AppShell {
 
           $this->User->read(null, $user_id);
           $this->User->set(array('money' => $user_new_sold));
-          //$this->User->save();
+        //  $this->User->save();
 
 
           $this->RefundHistory->create();
@@ -238,6 +241,7 @@ class RefundV5Shell extends AppShell {
 
 		$this->out("\n\n");
 		$this->out('Time: '.(microtime(true)-$time).' sec.');
+		$this->out('Total utilisateurs remboursés : '.$users_refunded);
 		$this->out('Total remboursé : '.$global_refund.' PB');
 
   }

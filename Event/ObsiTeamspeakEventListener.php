@@ -21,15 +21,16 @@ class ObsiTeamspeakEventListener implements CakeEventListener {
 
       // On chage les models & components
       $ServerComponent = $this->controller->Server;
+      $server_id = Configure::read('ObsiPlugin.server.pvp.id');
 
       /*
         On gère l'autorisation pour créer un channel
       */
 
-        $getPlayerFaction = $ServerComponent->call(array('getPlayerFaction' => $this->controller->User->getKey('pseudo'))); // On récupère la faction du joueur
+        $getPlayerFaction = $ServerComponent->call(array('getPlayerFaction' => $this->controller->User->getKey('pseudo')), true, $server_id); // On récupère la faction du joueur
         if(isset($getPlayerFaction['getPlayerFaction']) && !empty($getPlayerFaction['getPlayerFaction']) && $getPlayerFaction['getPlayerFaction'] != "PLAYER_NOT_CONNECTED") { // La requête a réussi & on a trouvé une faction & qu'il est connecté
 
-          $checkFactionLeader = $ServerComponent->call(array('getFactionLeader' => $getPlayerFaction['getPlayerFaction'])); // On récupère le leader de la faction
+          $checkFactionLeader = $ServerComponent->call(array('getFactionLeader' => $getPlayerFaction['getPlayerFaction']), true, $server_id); // On récupère le leader de la faction
           if(isset($checkFactionLeader['getFactionLeader']) && $checkFactionLeader['getFactionLeader'] == $this->controller->User->getKey('pseudo')) { // Si la requête a réussi & c'est le leader
 
             $TeamspeakChannelModel = ClassRegistry::init('Obsi.TeamspeakChannel'); // on charge le model

@@ -8,10 +8,10 @@
 	"apiID":-1,
 	"useEvents":true,
 	"permissions" : {
-		"available" : ["CREATE_TEAMSPEAK_CHANNEL"],
+		"available" : ["CREATE_TEAMSPEAK_CHANNEL", "CAN_TAKE_PSC"],
 		"default" : {
-			"0": ["CREATE_TEAMSPEAK_CHANNEL"],
-			"2": ["CREATE_TEAMSPEAK_CHANNEL"]
+			"0": ["CREATE_TEAMSPEAK_CHANNEL", "CAN_TAKE_PSC"],
+			"2": ["CREATE_TEAMSPEAK_CHANNEL", "CAN_TAKE_PSC"]
 		}
 	},
 	"requirements" : {

@@ -48,7 +48,7 @@ class ObsiGlobalsEventListener implements CakeEventListener {
       'Le Sadian s\'appelait auparavant Grobsi.',
       'L\'Orbe de réparation peut être enchantée "Incassable III".',
       'Le TP-Kill est autorisé, mais pas les demandes de tp dans le chat.',
-      'Ce message a été écrit par Helio.',
+      'Ce message a été écrit par Isotheis.',
       'Les joueurs sont capables de réfléchir seuls.',
       'dem0niak joue sur un compte joueur actuellement, le nom reste secret.',
       'Le serveur Obsifight possède un Twitter et un Facebook.',
