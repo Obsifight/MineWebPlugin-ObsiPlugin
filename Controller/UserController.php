@@ -561,4 +561,50 @@ class UserController extends ObsiAppController {
 
     }
 
+  /*
+    Se faire switch de serveur
+  */
+
+    public function switchServer() {
+      if($this->isConnected) {
+
+        $user_pseudo = $this->User->getKey('pseudo');
+        $staff = Configure::read('ObsiPlugin.staff');
+
+        $isInStaff = false;
+        foreach ($staff as $rank => $users) {
+          if(in_array($user_pseudo, $users)) {
+            $isInStaff = true;
+            break;
+          }
+        }
+
+        if($isInStaff) {
+
+          $server_id = Configure::read('ObsiPlugin.server.pvp.id');
+          $server_bungee_id = Configure::read('ObsiPlugin.server.bungee.id');
+
+          $callConnected = $this->Server->call(array('isConnected' => $user_pseudo), true, $server_id);
+          if(isset($callConnected['isConnected']) && $callConnected['isConnected'] == "true") {
+
+            $this->Session->setFlash('Vous être déjà connecté !', 'default.error');
+            $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+
+          } else {
+            $this->Server->call(array('performCommand' => 'send '.$user_pseudo.' srv_pvp'), true, $server_bungee_id);
+
+            $this->Session->setFlash('Vous avez été switch sur le serveur pvp !', 'default.success');
+            $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+          }
+
+        } else {
+          $this->Session->setFlash('Vous ne faites pas partie du staff !', 'default.error');
+          $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+        }
+
+      } else {
+        throw new ForbiddenException();
+      }
+    }
+
 }

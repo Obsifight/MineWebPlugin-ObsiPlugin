@@ -134,6 +134,32 @@ class ObsiUserEventListener implements CakeEventListener {
 
       $ip = $this->controller->Util->getIP();
 
+      /*
+        Switch du serveur
+      */
+
+        $staff = Configure::read('ObsiPlugin.staff');
+        $isInStaff = false;
+        foreach ($staff as $rank => $users) {
+          if(in_array($user['pseudo'], $users)) {
+            $isInStaff = true;
+            break;
+          }
+        }
+
+        if($isInStaff) {
+
+          $isNotConnected = true;
+
+          $ServerComponent = $this->controller->Server;
+          $server_id = Configure::read('ObsiPlugin.server.pvp.id');
+          $callConnected = $ServerComponent->call(array('isConnected' => $user['pseudo']), true, $server_id);
+          if(isset($callConnected['isConnected']) && $callConnected['isConnected'] == "true") {
+            $isNotConnected = false;
+          }
+
+        }
+
       $this->controller->set(compact(
         'confirmed',
         'profileCompletedPercentage',
@@ -144,7 +170,9 @@ class ObsiUserEventListener implements CakeEventListener {
         'capeHeightMax',
         'capeWidthMax',
         'obsiguardStatus',
-        'ip'
+        'ip',
+        'isInStaff',
+        'isNotConnected'
       ));
 
       /*
