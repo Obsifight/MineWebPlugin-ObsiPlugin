@@ -188,4 +188,43 @@ class PaysafecardController extends ObsiAppController {
     }
   }
 
+  public function admin_viewQuota() {
+    if($this->isConnected && $this->User->isAdmin()) {
+
+      $this->layout = 'admin';
+      $this->set('title_for_layout', 'Voir les quotas de PaySafeCard');
+
+      $quotas = Configure::read('Obsi.shop.psc.quotas');
+      $usersToFind = array();
+      $usersByID = array();
+      $usersQuotas = array();
+
+      $this->loadModel('Shop.PaysafecardHistory');
+      $findPaySafeCardHistory = $this->PaysafecardHistory->find('all');
+      foreach ($findPaySafeCardHistory as $key => $value) {
+        $usersToFind[] = $value['PaysafecardHistory']['author_id'];
+
+        if(!isset($usersQuotas[$value['PaysafecardHistory']['author_id']])) {
+          $usersQuotas[$value['PaysafecardHistory']['author_id']] = $value['PaysafecardHistory']['amount'];
+        } else {
+          $usersQuotas[$value['PaysafecardHistory']['author_id']] += $value['PaysafecardHistory']['amount'];
+        }
+      }
+
+      $findUsersByID = $this->User->find('all', array('conditions' => array('id' => $usersToFind)));
+      foreach ($findUsersByID as $key => $value) {
+        $usersByID[$value['User']['id']] = $value['User']['pseudo'];
+      }
+
+      $this->set(compact(
+        'usersQuotas',
+        'quotas',
+        'usersByID'
+      ));
+
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
 }
