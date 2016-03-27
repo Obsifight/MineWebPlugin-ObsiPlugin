@@ -169,8 +169,8 @@ class StatsController extends ObsiAppController {
       $registeredUsersThisWeek = $this->User->find('count', array(
         'conditions' => array(
           'AND' => array(
-            'created >=' => date('Y-m-d 00:00:00', strtotime('-1 week')),
-            'created <=' => date('Y-m-d 23:59:59', strtotime('-1 week')),
+            'created >=' => date('Y-m-01 00:00:00'),
+            'created <=' => date('Y-m-31 23:59:59'),
           )
         )
       ));
