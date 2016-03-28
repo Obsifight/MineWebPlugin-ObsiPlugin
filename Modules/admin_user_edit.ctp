@@ -16,7 +16,7 @@
                 echo '<tr>';
                   echo '<th>IP</th>';
                   echo '<th>Action</th>';
-                echo '<tr>';
+                echo '</tr>';
               echo '</thead>';
               echo '<tbody>';
                 foreach ($obsiguardIPs as $id => $ip) {
@@ -50,6 +50,82 @@
 
         } else {
           echo '<div class="alert alert-danger">Le joueur n\'a pas activé ObsiGuard !</div>';
+        }
+        ?>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Logs de connexion launcher</h3>
+      </div>
+      <div class="box-body">
+
+        <?php
+
+        if(!empty($launcherConnectionLogs)) {
+
+          echo '<table class="table table-bordered dataTable">';
+            echo '<thead>';
+              echo '<tr>';
+                echo '<th>IP</th>';
+                echo '<th>Date</th>';
+              echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+              foreach ($launcherConnectionLogs as $key => $value) {
+                echo '<tr>';
+                  echo '<td>'.$value['loginlogs']['ip'].'</td>';
+                  echo '<td>'.$Lang->date($value['loginlogs']['date']).'</td>';
+                echo '</tr>';
+              }
+            echo '</tbody>';
+          echo '</table>';
+
+        } else {
+          echo '<div class="alert alert-danger">Les logs de connexion sont vides !</div>';
+        }
+        ?>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Logs de connexion site</h3>
+      </div>
+      <div class="box-body">
+
+        <?php
+
+        if(!empty($webConnectionLogs)) {
+
+          echo '<table class="table table-bordered dataTable">';
+            echo '<thead>';
+              echo '<tr>';
+                echo '<th>IP</th>';
+                echo '<th>Date</th>';
+              echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+              foreach ($webConnectionLogs as $key => $value) {
+                echo '<tr>';
+                  echo '<td>'.$value['ConnectionLog']['ip'].'</td>';
+                  echo '<td>'.$Lang->date($value['ConnectionLog']['created']).'</td>';
+                echo '</tr>';
+              }
+            echo '</tbody>';
+          echo '</table>';
+
+        } else {
+          echo '<div class="alert alert-danger">Les logs de connexion sont vides !</div>';
         }
         ?>
 

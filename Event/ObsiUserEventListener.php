@@ -18,7 +18,8 @@ class ObsiUserEventListener implements CakeEventListener {
           'beforeUpdatePassword' => 'updatePasswordOnAuth',
           'beforeEditUser' => 'editUserOnAuth',
           'onBuy' => 'checkIfPseudo',
-          'onLoadAdminPanel' => 'setObsiguardVarsOnUserEdit'
+          'onLoadAdminPanel' => 'setObsiguardVarsOnUserEdit',
+          'onLogin' => 'logConnection'
       );
   }
 
@@ -36,6 +37,10 @@ class ObsiUserEventListener implements CakeEventListener {
 
   public function setObsiguardVarsOnUserEdit($event) {
     if($this->controller->params['controller'] == "user" && $this->controller->params['action'] == "admin_edit") {
+
+      /*
+          ObsiGuard
+      */
 
       $user_id = $this->controller->request->params['pass'][0];
       $findUser = $this->controller->User->find('first', array('conditions' => array('id' => $user_id)));
@@ -64,7 +69,39 @@ class ObsiUserEventListener implements CakeEventListener {
       }
       ModuleComponent::$vars['obsiguardStatus'] = $obsiguardStatus;
 
+      /*
+          Logs de connexion launcher
+      */
+
+      App::uses('ConnectionManager', 'Model');
+      $con = new ConnectionManager;
+      ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
+      $db = $con->getDataSource('Util');
+      $launcherConnectionLogs = $db->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC');
+      ModuleComponent::$vars['launcherConnectionLogs'] = $launcherConnectionLogs;
+
+
+      /*
+          Logs de connexion site
+      */
+
+      $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
+      $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc'));
+      ModuleComponent::$vars['webConnectionLogs'] = $webConnectionLogs;
+
+
     }
+  }
+
+  public function logConnection($event) {
+    $ip = $this->controller->Util->getIP();
+
+    $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
+    $ConnectionLogModel->create();
+    $ConnectionLogModel->set(array(
+      'ip' => $ip
+    ));
+    $ConnectionLogModel->save();
   }
 
   public function setProfileVars($event) {
