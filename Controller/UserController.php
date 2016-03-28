@@ -3,6 +3,116 @@
 class UserController extends ObsiAppController {
 
   /*
+    Obsiguard Admin
+  */
+
+    function admin_deleteIPObsiguard($user_id, $ip_id) {
+      $this->autoRender = false;
+      if($this->isConnected && $this->User->isAdmin()) {
+        $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
+        if(!empty($findUser)) {
+
+          $user_pseudo = $findUser['User']['pseudo'];
+
+          // On se connecte à la db
+            App::uses('ConnectionManager', 'Model');
+            $con = new ConnectionManager;
+            ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+            $db = $con->getDataSource('Auth');
+
+          // On va récupérer les IPs actuelles
+            $find = $db->fetchAll('SELECT authorised_ip FROM joueurs WHERE user_pseudo=?', array($user_pseudo));
+            if(!empty($find)) {
+              // On ajoute l'ip envoyé à notre liste
+              $ipList = $find[0]['joueurs']['authorised_ip'];
+              $ipList = @unserialize($find[0]['joueurs']['authorised_ip']);
+              if(is_array($ipList) && isset($ipList[$ip_id])) { // Si la clé existe
+                unset($ipList[$ip_id]); // on la supprime
+              }
+            } else {
+              echo json_encode(array('statut' => false, 'msg' => 'Player not found'));
+              return;
+            }
+
+          $ipList = serialize($ipList);
+
+          // On va set
+            $db->fetchAll('UPDATE joueurs SET authorised_ip=? WHERE user_pseudo=?', array($ipList, $user_pseudo));
+
+
+          $this->Session->setFlash('L\'ObsiGuard du joueur '.$user_pseudo.' a bien été modifié !', 'default.success');
+          $this->redirect(array('controller' => 'user', 'action' => 'edit', 'admin' => true, 'plugin' => false, $user_id));
+
+        } else {
+          throw new ForbiddenException();
+        }
+      }
+    }
+
+    function admin_switchObsiguardDynamic($user_id) {
+      $this->autoRender = false;
+      if($this->isConnected && $this->User->isAdmin()) {
+        $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
+        if(!empty($findUser)) {
+
+          $user_pseudo = $findUser['User']['pseudo'];
+
+          // On se connecte à la db
+            App::uses('ConnectionManager', 'Model');
+            $con = new ConnectionManager;
+            ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+            $db = $con->getDataSource('Auth');
+
+          // On va récupérer l'état actuel du mode
+            $find = $db->fetchAll('SELECT dynamic_ip FROM joueurs WHERE user_pseudo=?', array($user_pseudo));
+            if(!empty($find)) {
+              $status = ($find[0]['joueurs']['dynamic_ip']) ? 0 : 1;
+            } else {
+              echo json_encode(array('statut' => false, 'msg' => 'Player not found'));
+            }
+
+          // On va set
+            $db->fetchAll('UPDATE joueurs SET dynamic_ip=? WHERE user_pseudo=?', array($status, $user_pseudo));
+
+          $this->Session->setFlash('L\'ObsiGuard du joueur '.$user_pseudo.' a bien été modifié !', 'default.success');
+          $this->redirect(array('controller' => 'user', 'action' => 'edit', 'admin' => true, 'plugin' => false, $user_id));
+
+        } else {
+          throw new ForbiddenException();
+        }
+      }
+    }
+
+    function admin_disableObsiguard($user_id) {
+      $this->autoRender = false;
+      if($this->isConnected && $this->User->isAdmin()) {
+        $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
+        if(!empty($findUser)) {
+
+          $user_pseudo = $findUser['User']['pseudo'];
+
+          // On se connecte à la db
+            App::uses('ConnectionManager', 'Model');
+            $con = new ConnectionManager;
+            ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+            $db = $con->getDataSource('Auth');
+
+          // On va mettre NULL comme IP autorisées
+            $db->fetchAll('UPDATE joueurs SET authorised_ip=NULL WHERE user_pseudo=?', array($user_pseudo));
+
+          // On le met dans la bdd site
+            $this->User->setToUser('obsi-obsiguard_enabled', 0, $user_id);
+
+          $this->Session->setFlash('L\'ObsiGuard du joueur '.$user_pseudo.' a bien été modifié !', 'default.success');
+          $this->redirect(array('controller' => 'user', 'action' => 'edit', 'admin' => true, 'plugin' => false, $user_id));
+
+        } else {
+          throw new ForbiddenException();
+        }
+      }
+    }
+
+  /*
     Inscription
   */
 

@@ -17,7 +17,8 @@ class ObsiUserEventListener implements CakeEventListener {
           'beforeResetPassword' => 'updateAfterResetPasswordOnAuth',
           'beforeUpdatePassword' => 'updatePasswordOnAuth',
           'beforeEditUser' => 'editUserOnAuth',
-          'onBuy' => 'checkIfPseudo'
+          'onBuy' => 'checkIfPseudo',
+          'onLoadAdminPanel' => 'setObsiguardVarsOnUserEdit'
       );
   }
 
@@ -31,6 +32,39 @@ class ObsiUserEventListener implements CakeEventListener {
     $event->result = sha1($pseudo.$salt.$password);
     $event->stopPropagation();
 
+  }
+
+  public function setObsiguardVarsOnUserEdit($event) {
+    if($this->controller->params['controller'] == "user" && $this->controller->params['action'] == "admin_edit") {
+
+      $user_id = $this->controller->request->params['pass'][0];
+      $findUser = $this->controller->User->find('first', array('conditions' => array('id' => $user_id)));
+      $user = $findUser['User'];
+
+      $obsiguardStatus = ($user['obsi-obsiguard_enabled']);
+      if($obsiguardStatus) { // Si il est activé
+
+        // On se connecte à la db
+          App::uses('ConnectionManager', 'Model');
+          $con = new ConnectionManager;
+          ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+          $db = $con->getDataSource('Auth');
+
+        // On va récupérer les IPs actuelles
+          $find = $db->fetchAll('SELECT authorised_ip,dynamic_ip FROM joueurs WHERE user_pseudo=?', array($user['pseudo']));
+          if(!empty($find) && isset($find[0]['joueurs']['authorised_ip']) && isset($find[0]['joueurs']['dynamic_ip'])) {
+            $authorised_ip = @unserialize($find[0]['joueurs']['authorised_ip']);
+            if(is_array($authorised_ip)) {
+              ModuleComponent::$vars['obsiguardIPs'] = $authorised_ip; // On les ses
+            }
+            ModuleComponent::$vars['obsiguardDynamicIPStatus'] = $find[0]['joueurs']['dynamic_ip'];
+          }
+
+
+      }
+      ModuleComponent::$vars['obsiguardStatus'] = $obsiguardStatus;
+
+    }
   }
 
   public function setProfileVars($event) {
