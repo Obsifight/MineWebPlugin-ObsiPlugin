@@ -11,6 +11,7 @@ class ObsiAppSchema extends CakeSchema {
 	public $obsi__connection_logs = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'ip' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 16, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)

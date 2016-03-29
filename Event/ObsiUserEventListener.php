@@ -86,7 +86,7 @@ class ObsiUserEventListener implements CakeEventListener {
       */
 
       $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
-      $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc'));
+      $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc', 'conditions' => array('user_id' => $user_id)));
       ModuleComponent::$vars['webConnectionLogs'] = $webConnectionLogs;
 
 
@@ -99,7 +99,8 @@ class ObsiUserEventListener implements CakeEventListener {
     $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
     $ConnectionLogModel->create();
     $ConnectionLogModel->set(array(
-      'ip' => $ip
+      'ip' => $ip,
+      'user_id' => $event->data['user']['id']
     ));
     $ConnectionLogModel->save();
   }
