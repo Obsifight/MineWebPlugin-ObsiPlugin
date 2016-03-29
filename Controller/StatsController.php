@@ -176,9 +176,9 @@ class StatsController extends ObsiAppController {
       ));
       $totalUsers = $this->User->find('count');
 
-      $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2);
-      $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2);
-      $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2);
+      $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+      $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+      $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
 
 
   /*
