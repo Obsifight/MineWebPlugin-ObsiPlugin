@@ -402,6 +402,9 @@ class ObsiUserEventListener implements CakeEventListener {
   }
 
   function editUserOnAuth($event) {
+    /*
+      Le mot de passe edit sur l'auth
+    */
     if($event->data['password_updated']) {
 
       $user_id = $event->data['user_id'];
@@ -415,6 +418,24 @@ class ObsiUserEventListener implements CakeEventListener {
       $db = $con->getDataSource('Auth');
       // On va l'update
         $db->fetchAll('UPDATE joueurs SET user_mdp=? WHERE user_pseudo=?', array($password, $pseudo));
+
+    }
+    /*
+      Ptite vérif pour éviter de niquer les quotas de PSC, hein Wave <3
+    */
+
+    if(isset($event->data['data']['money'])) {
+
+      // On récupère la money actuelle du joueur edit
+      $findUser = $this->controller->User->find('first', array('fields' => array('money', 'pseudo'), 'conditions' => array('id' => $event->data['user_id'])));
+      $user_money = $findUser['User']['money'];
+
+      if($user_money != $event->data['data']['money']) {
+        file_put_contents(ROOT.DS.'app'.DS.'tmp'.DS.'logs'.DS.'obsi.log', file_get_contents(ROOT.DS.'app'.DS.'tmp'.DS.'logs'.DS.'obsi.log')."\n[".date('Y-m-d H:i:s')."] ".$this->controller->User->getKey('pseudo')." a tenté de modifié les crédits de ".$findUser['User']['pseudo']);
+        echo json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas modifier les crédits boutique de cet utilisateur !'));
+        $event->stopPropagation();
+        return false;
+      }
 
     }
   }
