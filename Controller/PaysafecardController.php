@@ -192,7 +192,7 @@ class PaysafecardController extends ObsiAppController {
     if($this->isConnected && $this->User->isAdmin()) {
 
       $this->layout = 'admin';
-      $this->set('title_for_layout', 'Voir les quotas de PaySafeCard');
+      $this->set('title_for_layout', 'Voir les quotas de PaySafeCard depuis '.date('Y-m-01 00:00:00'));
 
       $quotas = Configure::read('Obsi.shop.psc.quotas');
       $usersToFind = array();
@@ -200,7 +200,7 @@ class PaysafecardController extends ObsiAppController {
       $usersQuotas = array();
 
       $this->loadModel('Shop.PaysafecardHistory');
-      $findPaySafeCardHistory = $this->PaysafecardHistory->find('all');
+      $findPaySafeCardHistory = $this->PaysafecardHistory->find('all', array('conditions' => array('created >= ' => date('Y-m-01 00:00:00'))));
       foreach ($findPaySafeCardHistory as $key => $value) {
         $usersToFind[] = $value['PaysafecardHistory']['author_id'];
 

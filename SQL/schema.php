@@ -69,6 +69,7 @@ class ObsiAppSchema extends CakeSchema {
 		'obsi-obsiguard_code' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 10, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 		'obsi-obsiguard_manage_key' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 10, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 		'obsi-can_update_pseudo' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false),
+		'obsi-event_money' => array('type' => 'integer', 'null' => true, 'default' => '0', 'length' => 20, 'unsigned' => false)
 	);
 
 	public $obsi__pseudo_update_histories = array(

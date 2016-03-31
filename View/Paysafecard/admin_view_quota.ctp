@@ -3,7 +3,7 @@
     <div class="col-md-12">
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">Informations sur les quotas des utilisateurs</h3>
+          <h3 class="box-title">Informations sur les quotas des utilisateurs depuis <?= date('Y-m-01 00:00:00') ?></h3>
         </div>
         <div class="box-body">
 
