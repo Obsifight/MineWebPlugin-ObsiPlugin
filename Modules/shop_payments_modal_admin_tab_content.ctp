@@ -82,7 +82,7 @@
       if(data.statut) {
         $('td.psc-code[data-psc-id="'+id+'"]').html(data.code);
         $('#ajax-psc').fadeOut(150, function() {
-          $(this).remove();
+          $(this).hide();
         })
         td.html('<a href="#" class="btn btn-success" onClick="valid('+id+')">Valider</a>');
         td.append('<a href="<?= $this->Html->url(array('controller' => 'paysafecard', 'action' => 'invalid', 'plugin' => 'obsi')) ?>/'+id+'" class="btn btn-danger" data-psc-id="'+id+'">Invalider</a>');

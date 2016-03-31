@@ -18,44 +18,51 @@ class PaysafecardController extends ObsiAppController {
           $ifTaked = $this->PscTaked->find('first', array('conditions' => array('psc_id' => $id)));
           if(empty($ifTaked)) {
 
-            $this->loadModel('Shop.PaysafecardHistory');
-            $findPSCValidedThisMonth = $this->PaysafecardHistory->find('all', array(
-              'fields' => array('SUM(amount)'),
-              'conditions' => array(
-                'author_id' => $this->User->getKey('id'),
-                'created >= ' => date('Y-m-01 00:00:00') // supérieur au début du mois courant
-              )
-            ));
+            $searchIfAlreadyTaked = $this->PscTaked->find('first', array('conditions' => array('user_id' => $this->User->getKey('id'))));
+            if(empty($searchIfAlreadyTaked)) {
 
-            $quotas = Configure::read('Obsi.shop.psc.quotas');
-            foreach ($quotas as $user => $quota) {
+              $this->loadModel('Shop.PaysafecardHistory');
+              $findPSCValidedThisMonth = $this->PaysafecardHistory->find('all', array(
+                'fields' => array('SUM(amount)'),
+                'conditions' => array(
+                  'author_id' => $this->User->getKey('id'),
+                  'created >= ' => date('Y-m-01 00:00:00') // supérieur au début du mois courant
+                )
+              ));
 
-              if($this->User->getKey('pseudo') == $user) {
-                $userQuota = $quota;
-                break;
+              $quotas = Configure::read('Obsi.shop.psc.quotas');
+              foreach ($quotas as $user => $quota) {
+
+                if($this->User->getKey('pseudo') == $user) {
+                  $userQuota = $quota;
+                  break;
+                }
+
+              }
+              if(!isset($userQuota)) {
+                $userQuota = $quotas['all'];
               }
 
-            }
-            if(!isset($userQuota)) {
-              $userQuota = $quotas['all'];
-            }
+              if(empty($findPSCValidedThisMonth)) {
+                $quotaUsed = $findPSC['Paysafecard']['amount'];
+              } else {
+                $quotaUsed = $findPSCValidedThisMonth[0][0]['SUM(amount)'] + $findPSC['Paysafecard']['amount'];
+              }
 
-            if(empty($findPSCValidedThisMonth)) {
-              $quotaUsed = $findPSC['Paysafecard']['amount'];
+              if(empty($findPSCValidedThisMonth) || $quotaUsed <= $userQuota) {
+
+                $this->PscTaked->create();
+                $this->PscTaked->set(array('user_id' => $this->User->getKey('id'), 'psc_id' => $id));
+                $this->PscTaked->save();
+
+                echo json_encode(array('statut' => true, 'code' => $findPSC['Paysafecard']['code']));
+
+              } else {
+                echo json_encode(array('statut' => false, 'msg' => 'Vous avez déjà dépassé votre quota du mois !'));
+              }
+
             } else {
-              $quotaUsed = $findPSCValidedThisMonth[0][0]['SUM(amount)'] + $findPSC['Paysafecard']['amount'];
-            }
-
-            if(empty($findPSCValidedThisMonth) || $quotaUsed <= $userQuota) {
-
-              $this->PscTaked->create();
-              $this->PscTaked->set(array('user_id' => $this->User->getKey('id'), 'psc_id' => $id));
-              $this->PscTaked->save();
-
-              echo json_encode(array('statut' => true, 'code' => $findPSC['Paysafecard']['code']));
-
-            } else {
-              echo json_encode(array('statut' => false, 'msg' => 'Vous avez déjà dépassé votre quota du mois !'));
+              echo json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez prendre qu\'une seule PaySafeCard à la fois !'));
             }
 
           } else {
