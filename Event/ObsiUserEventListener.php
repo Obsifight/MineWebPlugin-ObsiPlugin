@@ -18,7 +18,7 @@ class ObsiUserEventListener implements CakeEventListener {
           'beforeUpdatePassword' => 'updatePasswordOnAuth',
           'beforeEditUser' => 'editUserOnAuth',
           'onBuy' => 'checkIfPseudo',
-          'onLoadAdminPanel' => 'setObsiguardVarsOnUserEdit',
+          'onLoadAdminPanel' => 'setVarsOnUserEdit',
           'onLogin' => 'logConnection'
       );
   }
@@ -35,60 +35,109 @@ class ObsiUserEventListener implements CakeEventListener {
 
   }
 
-  public function setObsiguardVarsOnUserEdit($event) {
+  public function setVarsOnUserEdit($event) {
     if($this->controller->params['controller'] == "user" && $this->controller->params['action'] == "admin_edit") {
 
       /*
           ObsiGuard
       */
 
-      $user_id = $this->controller->request->params['pass'][0];
-      $findUser = $this->controller->User->find('first', array('conditions' => array('id' => $user_id)));
-      $user = $findUser['User'];
+        $user_id = $this->controller->request->params['pass'][0];
+        $findUser = $this->controller->User->find('first', array('conditions' => array('id' => $user_id)));
+        $user = $findUser['User'];
 
-      $obsiguardStatus = ($user['obsi-obsiguard_enabled']);
-      if($obsiguardStatus) { // Si il est activé
+        $obsiguardStatus = ($user['obsi-obsiguard_enabled']);
+        if($obsiguardStatus) { // Si il est activé
 
-        // On se connecte à la db
-          App::uses('ConnectionManager', 'Model');
-          $con = new ConnectionManager;
-          ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
-          $db = $con->getDataSource('Auth');
+          // On se connecte à la db
+            App::uses('ConnectionManager', 'Model');
+            $con = new ConnectionManager;
+            ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+            $db = $con->getDataSource('Auth');
 
-        // On va récupérer les IPs actuelles
-          $find = $db->fetchAll('SELECT authorised_ip,dynamic_ip FROM joueurs WHERE user_pseudo=?', array($user['pseudo']));
-          if(!empty($find) && isset($find[0]['joueurs']['authorised_ip']) && isset($find[0]['joueurs']['dynamic_ip'])) {
-            $authorised_ip = @unserialize($find[0]['joueurs']['authorised_ip']);
-            if(is_array($authorised_ip)) {
-              ModuleComponent::$vars['obsiguardIPs'] = $authorised_ip; // On les ses
+          // On va récupérer les IPs actuelles
+            $find = $db->fetchAll('SELECT authorised_ip,dynamic_ip FROM joueurs WHERE user_pseudo=?', array($user['pseudo']));
+            if(!empty($find) && isset($find[0]['joueurs']['authorised_ip']) && isset($find[0]['joueurs']['dynamic_ip'])) {
+              $authorised_ip = @unserialize($find[0]['joueurs']['authorised_ip']);
+              if(is_array($authorised_ip)) {
+                ModuleComponent::$vars['obsiguardIPs'] = $authorised_ip; // On les ses
+              }
+              ModuleComponent::$vars['obsiguardDynamicIPStatus'] = $find[0]['joueurs']['dynamic_ip'];
             }
-            ModuleComponent::$vars['obsiguardDynamicIPStatus'] = $find[0]['joueurs']['dynamic_ip'];
-          }
 
 
-      }
-      ModuleComponent::$vars['obsiguardStatus'] = $obsiguardStatus;
+        }
+        ModuleComponent::$vars['obsiguardStatus'] = $obsiguardStatus;
 
       /*
           Logs de connexion launcher
       */
 
-      App::uses('ConnectionManager', 'Model');
-      $con = new ConnectionManager;
-      ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
-      $db = $con->getDataSource('Util');
-      $launcherConnectionLogs = $db->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC');
-      ModuleComponent::$vars['launcherConnectionLogs'] = $launcherConnectionLogs;
+        App::uses('ConnectionManager', 'Model');
+        $con = new ConnectionManager;
+        ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
+        $dbUtil = $con->getDataSource('Util');
+        $launcherConnectionLogs = $dbUtil->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC');
+        ModuleComponent::$vars['launcherConnectionLogs'] = $launcherConnectionLogs;
 
 
       /*
           Logs de connexion site
       */
 
-      $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
-      $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc', 'conditions' => array('user_id' => $user_id)));
-      ModuleComponent::$vars['webConnectionLogs'] = $webConnectionLogs;
+        $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
+        $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc', 'conditions' => array('user_id' => $user_id)));
+        ModuleComponent::$vars['webConnectionLogs'] = $webConnectionLogs;
 
+      /*
+        On groupe les IPs & on les comptes
+      */
+
+        $groupedIP = array();
+
+        foreach ($launcherConnectionLogs as $key => $value) {
+
+          $data = $value['loginlogs'];
+          $ip = $data['ip'];
+
+          if(!isset($groupedIP[$ip])) {
+            $groupedIP[$ip] = 1;
+          } else {
+            $groupedIP[$ip]++;
+          }
+
+          unset($ip);
+          unset($data);
+
+        }
+
+        arsort($groupedIP);
+
+        ModuleComponent::$vars['groupedIP'] = $groupedIP;
+
+      /*
+        On recherche les éventuels doubles comptes (launcher)
+      */
+
+        $IPList = array_keys($groupedIP); // On récupére que les IPs
+
+        // On prépare la liste de OR
+        $query = "ip='";
+        $query .= implode("' OR ip='", $IPList);
+        $query .= "'";
+
+        // On recherche les comptes avec les IPs trouvées
+        $findDoubleAccountLogs = $dbUtil->query('SELECT *,COUNT(*) AS count FROM loginlogs WHERE '.$query.' GROUP BY username ORDER BY count DESC');
+
+        $doubleAccountLogs = array();
+        foreach ($findDoubleAccountLogs as $key => $value) {
+          $doubleAccountLogs[] = array(
+            'username' => $value['loginlogs']['username'],
+            'count' => $value['0']['count'],
+          );
+        }
+
+        ModuleComponent::$vars['doubleAccountLogs'] = $doubleAccountLogs;
 
     }
   }

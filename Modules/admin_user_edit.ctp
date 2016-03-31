@@ -91,6 +91,43 @@
         }
         ?>
 
+        <hr>
+
+        <h4>Liste des IPs différentes</h4>
+
+        <ul>
+          <?php
+          foreach ($groupedIP as $ip => $count) {
+            echo '<li>';
+              echo '<b>'.$count.'</b> connexions avec l\'IP : '.$ip;
+            echo '</li>';
+          }
+          ?>
+        </ul>
+
+        <hr>
+
+        <h4>Potentiel liste de doubles comptes selon les IPs de connexion au launcher (regroupés par pseudo)</h4>
+
+        <table class="table table-bordered dataTable">
+          <thead>
+            <tr>
+              <th>Pseudo</th>
+              <th>Nombre de connexions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            foreach ($doubleAccountLogs as $key => $value) {
+              echo '<tr>';
+                echo '<td>'.$value['username'].'</td>';
+                echo '<td>'.$value['count'].'</td>';
+              echo '</tr>';
+            }
+            ?>
+          </tbody>
+        </table>
+
       </div>
     </div>
   </div>
