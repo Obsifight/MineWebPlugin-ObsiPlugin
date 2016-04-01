@@ -423,8 +423,8 @@ class ObsiUserEventListener implements CakeEventListener {
     /*
       Ptite vérif pour éviter de niquer les quotas de PSC, hein Wave <3
     */
-
-    if(isset($event->data['data']['money'])) {
+    $configuredUserCanBypassUserEditMoney = Configure::read('Obsi.users.bypass.user.edit.money');
+    if(isset($event->data['data']['money']) && !in_array($this->controller->User->getKey('id'), $configuredUserCanBypassUserEditMoney)) {
 
       // On récupère la money actuelle du joueur edit
       $findUser = $this->controller->User->find('first', array('fields' => array('money', 'pseudo'), 'conditions' => array('id' => $event->data['user_id'])));
