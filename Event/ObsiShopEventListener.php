@@ -11,11 +11,12 @@ class ObsiShopEventListener implements CakeEventListener {
 
   public function implementedEvents() {
       return array(
-          'onLoadPage' => 'paysafecard'
+          'onLoadPage' => 'paysafecard',
+          'requestPage' => 'checkIfPaysafecardBan'
       );
   }
 
-  public function paysafecard() {
+  public function paysafecard($event) {
 
     $pscTakedModel = ClassRegistry::init('Obsi.PscTaked');
     $findPscTaked = $pscTakedModel->find('all');
@@ -29,6 +30,25 @@ class ObsiShopEventListener implements CakeEventListener {
 
     ModuleComponent::$vars['pscTaked'] = $pscTaked;
 
+  }
+
+  public function checkIfPaysafecardBan($event) {
+    if($this->controller->params['controller'] == "payment" && $this->controller->params['action'] == "paysafecard") {
+
+      $user_id = $this->controller->User->getKey('id');
+
+      $this->PscBan = ClassRegistry::init('Obsi.PscBan');
+      $findBan = $this->PscBan->find('first', array('conditions' => array('user_id' => $user_id)));
+      if(!empty($findBan)) {
+
+        echo json_encode(array('statut' => false, 'msg' => 'Vous avez été banni du moyen de paiement PaySafeCard pour abus ! Vous ne pouvez plus utiliser ce moyen de paiement.'));
+        exit;
+
+        $event->stopPropagation();
+        return false;
+      }
+
+    }
   }
 
 }

@@ -1,6 +1,44 @@
 <?php
 class PaysafecardController extends ObsiAppController {
 
+
+  public function admin_banUser($user_id) {
+    $this->autoRender = false;
+    if($this->isConnected && $this->User->isAdmin()) {
+
+      $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
+      if(!empty($findUser)) {
+
+        $this->loadModel('Obsi.PscBan');
+        $findBan = $this->PscBan->find('first', array('conditions' => array('user_id' => $user_id)));
+        if(empty($findBan)) {
+
+          $this->PscBan->create();
+          $this->PscBan->set(array(
+            'user_id' => $user_id,
+            'author_id' => $this->User->getKey('id')
+          ));
+          $this->PscBan->save();
+
+          $this->loadModel('Shop.Paysafecard');
+          $this->Paysafecard->deleteAll(array('user_id' => $user_id));
+
+          $this->Session->setFlash('Vous avez bien banni l\'utilisateur '.$findUser['User']['pseudo'].' du moyen de paiement PaySafeCard !', 'default.success');
+        } else {
+          $this->Session->setFlash('L\'utilisateur '.$findUser['User']['pseudo'].' est déjà banni du moyen de paiement PaySafeCard !', 'default.error');
+        }
+
+        $this->redirect(array('controller' => 'payment', 'action' => 'index', 'plugin' => 'shop', 'admin' => true));
+
+      } else {
+        throw new NotFoundException();
+      }
+
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
   public function admin_take() {
     $this->autoRender = false;
     $this->response->type('json');

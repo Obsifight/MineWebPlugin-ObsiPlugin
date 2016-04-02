@@ -16,6 +16,11 @@
         <th class="right"><?= $Lang->get('GLOBAL__ACTIONS') ?></th>
       </tr>
     </thead>
+    <style media="screen">
+      table tr td:last-child > div.btn-group {
+        width: 220px;
+      }
+    </style>
     <tbody>
       <?php if(isset($paysafecards)) { ?>
         <?php foreach ($paysafecards as $key => $value) { ?>
@@ -43,13 +48,19 @@
                 <?php
                 if(isset($pscTaked[$value['Paysafecard']['id']])) {
                   if($pscTaked[$value['Paysafecard']['id']]) {
-                    echo '<a href="#" class="btn btn-success" onClick="valid('.$value['Paysafecard']['id'].')">Valider</a>';
-                    echo '<a href="'.$this->Html->url(array('controller' => 'paysafecard', 'action' => 'invalid', 'plugin' => 'obsi', $value['Paysafecard']['id'])).'" class="btn btn-danger" data-psc-id="'.$value['Paysafecard']['id'].'">Invalider</a>';
+                    echo '<div class="btn-group">';
+                      echo '<a href="#" class="btn btn-success" onClick="valid('.$value['Paysafecard']['id'].')">Valider</a>';
+                      echo '<a href="'.$this->Html->url(array('controller' => 'paysafecard', 'action' => 'invalid', 'plugin' => 'obsi', $value['Paysafecard']['id'])).'" class="btn btn-danger" data-psc-id="'.$value['Paysafecard']['id'].'">Invalider</a>';
+                      echo '<a href="'.$this->Html->url(array('controller' => 'paysafecard', 'action' => 'banUser', 'plugin' => 'obsi', 'admin' => true, $value['Paysafecard']['user_id'])).'" class="btn btn-warning">Interdire</a>';
+                    echo '</div>';
                   } else {
                     echo '<a href="#" class="btn btn-info disabled" disabled>Déjà prise en charge</a>';
                   }
                 } else {
-                  echo '<a href="#" class="btn btn-info take-psc" data-psc-id="'.$value['Paysafecard']['id'].'">Je la prends</a>';
+                  echo '<div class="btn-group">';
+                    echo '<a href="#" class="btn btn-info take-psc" data-psc-id="'.$value['Paysafecard']['id'].'">Je la prends</a>';
+                    echo '<a href="'.$this->Html->url(array('controller' => 'paysafecard', 'action' => 'banUser', 'plugin' => 'obsi', 'admin' => true, $value['Paysafecard']['user_id'])).'" class="btn btn-warning">Interdire</a>';
+                  echo '</div>';
                 }
                 ?>
               </td>
