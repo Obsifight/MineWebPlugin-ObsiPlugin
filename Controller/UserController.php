@@ -327,50 +327,56 @@ class UserController extends ObsiAppController {
 
   				if(!empty($this->request->data['to']) && !empty($this->request->data['howMany']) && !empty($this->request->data['password'])) {
 
-            $password = $this->Util->password($this->request->data['password'], $this->User->getKey('pseudo'));
-            if($password == $this->User->getKey('password')) {
+            if($this->request->data['to'] != $this->User->getKey('pseudo') && $this->request->data['to'] != $this->User->getKey('id')) {
 
-    					if($this->User->exist($this->request->data['to'])) {
+              $password = $this->Util->password($this->request->data['password'], $this->User->getKey('pseudo'));
+              if($password == $this->User->getKey('password')) {
 
-    						$how = intval($this->request->data['howMany']);
+      					if($this->User->exist($this->request->data['to'])) {
 
-    						if($how > 0) {
+      						$how = intval($this->request->data['howMany']);
 
-    							$money_user = $this->User->getKey('money') - $how;
+      						if($how > 0) {
 
-    							if($money_user >= 0) {
+      							$money_user = $this->User->getKey('money') - $how;
 
-                    /*
-                      On vérifie qu'il est pas ban
-                    */
-                    $this->Sanctions = $this->Components->load('Obsi.Sanctions');
-                    if(!$this->Sanctions->isBanned($this->Sanctions->getUUID($this->User->getKey('pseudo')))) {
+      							if($money_user >= 0) {
 
-      								$this->User->setKey('money', $money_user);
-      								$to_money = $this->User->getFromUser('money', $this->request->data['to']) + $how;
-      								$this->User->setToUser('money', $to_money, $this->request->data['to']);
+                      /*
+                        On vérifie qu'il est pas ban
+                      */
+                      $this->Sanctions = $this->Components->load('Obsi.Sanctions');
+                      if(!$this->Sanctions->isBanned($this->Sanctions->getUUID($this->User->getKey('pseudo')))) {
 
-      								$this->History->set('SEND_MONEY', 'shop', $this->request->data['to'].'|'.$how);
-      								echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $money_user));
+        								$this->User->setKey('money', $money_user);
+        								$to_money = $this->User->getFromUser('money', $this->request->data['to']) + $how;
+        								$this->User->setToUser('money', $to_money, $this->request->data['to']);
 
-                    } else {
-                      echo json_encode(array('statut' => false, 'msg' => 'Vous êtes banni ! Vous ne pouvez pas transférez vos points !'));
-                    }
+        								$this->History->set('SEND_MONEY', 'shop', $this->request->data['to'].'|'.$how);
+        								echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $money_user));
 
-    							} else {
-    								echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY')));
-    							}
+                      } else {
+                        echo json_encode(array('statut' => false, 'msg' => 'Vous êtes banni ! Vous ne pouvez pas transférez vos points !'));
+                      }
 
-    						} else {
-    							echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY')));
-    						}
+      							} else {
+      								echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY')));
+      							}
 
-    					} else {
-    						echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_NOT_FOUND')));
-    					}
+      						} else {
+      							echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY')));
+      						}
+
+      					} else {
+      						echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_NOT_FOUND')));
+      					}
+
+              } else {
+                echo json_encode(array('statut' => false, 'msg' => 'Votre mot de passe est incorrect.'));
+              }
 
             } else {
-              echo json_encode(array('statut' => false, 'msg' => 'Votre mot de passe est incorrect.'));
+              echo json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas envoyer de points boutique à vous même !'));
             }
 
   				} else {
