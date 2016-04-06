@@ -200,11 +200,10 @@ class PaysafecardController extends ObsiAppController {
           $ifTaked = $this->PscTaked->find('first', array('conditions' => array('psc_id' => $id)));
           if(!empty($ifTaked)) {
 
-            $this->Paysafecard->delete($id);
             $this->loadModel('Shop.PaysafecardMessage');
             $this->PaysafecardMessage->read(null, null);
             $this->PaysafecardMessage->set(array(
-              'to' => $search['Paysafecard']['user_id'],
+              'user_id' => $search['Paysafecard']['user_id'],
               'type' => 0,
               'amount' => $search['Paysafecard']['amount'],
               'added_points' => 0
@@ -212,6 +211,7 @@ class PaysafecardController extends ObsiAppController {
             $this->PaysafecardMessage->save();
 
             $this->PscTaked->delete($ifTaked['PscTaked']['id']);
+            $this->Paysafecard->delete($id);
 
             $this->History->set('INVALID_PAYSAFECARD', 'shop');
 
