@@ -204,7 +204,7 @@ class PaysafecardController extends ObsiAppController {
             $this->loadModel('Shop.PaysafecardMessage');
             $this->PaysafecardMessage->read(null, null);
             $this->PaysafecardMessage->set(array(
-              'to' => $search['Paysafecard']['author'],
+              'to' => $search['Paysafecard']['user_id'],
               'type' => 0,
               'amount' => $search['Paysafecard']['amount'],
               'added_points' => 0
