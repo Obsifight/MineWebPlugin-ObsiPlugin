@@ -122,20 +122,35 @@ class ObsiUserEventListener implements CakeEventListener {
         $IPList = array_keys($groupedIP); // On récupére que les IPs
 
         // On prépare la liste de OR
-        $query = "ip='";
-        $query .= implode("' OR ip='", $IPList);
-        $query .= "'";
+        $queryOR = "ip='";
+        $queryOR .= implode("' OR ip='", $IPList);
+        $queryOR .= "'";
 
         // On recherche les comptes avec les IPs trouvées
-        $findDoubleAccountLogs = $dbUtil->query('SELECT *,COUNT(*) AS count FROM loginlogs WHERE '.$query.' GROUP BY username ORDER BY count DESC');
+        $findDoubleAccountLogs = $dbUtil->query("SELECT *,COUNT(*) AS count,GROUP_CONCAT(DISTINCT ip SEPARATOR ',') AS ipList FROM loginlogs WHERE $queryOR AND username != '{$user['pseudo']}' GROUP BY username ORDER BY count DESC");
 
         $doubleAccountLogs = array();
         foreach ($findDoubleAccountLogs as $key => $value) {
-          $doubleAccountLogs[] = array(
-            'username' => $value['loginlogs']['username'],
-            'count' => $value['0']['count'],
-          );
+          if($value['loginlogs']['username'] != $user['pseudo']) {
+
+            $ipList = explode(',', $value[0]['ipList']);
+            $count = 0;
+            foreach ($ipList as $k => $ip) {
+              $count += $groupedIP[$ip];
+            }
+
+            $doubleAccountLogs[] = array(
+              'username' => $value['loginlogs']['username'],
+              'count' => $count,
+            );
+            unset($count);
+
+          }
         }
+
+        usort($doubleAccountLogs, function($a, $b) {
+          return $a['count'] < $b['count'];
+        });
 
         ModuleComponent::$vars['doubleAccountLogs'] = $doubleAccountLogs;
 

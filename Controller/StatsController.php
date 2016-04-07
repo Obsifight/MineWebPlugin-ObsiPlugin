@@ -368,6 +368,13 @@ class StatsController extends ObsiAppController {
           $rankUser = '<span class="label label-primary">Joueur</span>';
         }
 
+        $searchIsOnline = $this->Server->call(array('isConnected' => $this->User->getKey('pseudo'), true, $server_id));
+        if(isset($searchIsOnline['isConnected']) && $isOnline['isConnected'] == "true") {
+          $isOnline = true;
+        } else {
+          $isOnline = false;
+        }
+
 
 
 
@@ -385,7 +392,8 @@ class StatsController extends ObsiAppController {
         'userBlocksDestroyed',
         'userKills',
         'userDeaths',
-        'userRatio'
+        'userRatio',
+        'isOnline'
       ));
 
     } else {

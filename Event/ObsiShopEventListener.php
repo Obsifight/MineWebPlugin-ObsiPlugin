@@ -63,20 +63,6 @@ class ObsiShopEventListener implements CakeEventListener {
     App::uses('HttpSocket', 'Network/Http');
     $HttpSocket = new HttpSocket();
 
-    /*$response = $HttpSocket->request([
-      'method' => 'POST',
-      'uri' => 'https://api.pushbullet.com/v2/pushes',
-      'header' => [
-        'Authorization' => 'Bearer o.syhxWyjBJ6tir7R4cDGonwV4GausKkzj'
-      ],
-      'body' => [
-        "channel_tag" => "ziziproutcaca",
-        "type" => "note",
-        "title" => "Nouvelle paysafecard",
-        "body" => $msg,
-        "url" => "http://obsifight.net/admin/shop/payment"
-      ]
-    ]);*/
     $response = $HttpSocket->post('https://api.pushbullet.com/v2/pushes',
       [
         "channel_tag" => "ziziproutcaca",

@@ -20,6 +20,12 @@ Router::connect('/admin/Obsi/*', array('controller' => 'user', 'action' => 'view
 Router::connect('/obsiapi/ipn/obsiguard/*', array('controller' => 'obsiguard', 'action' => 'ipn', 'plugin' => 'obsi'));
 Router::connect('/obsiapi/stats/getVisits', array('controller' => 'stats', 'action' => 'getVisits', 'plugin' => 'obsi'));
 
+/*App::uses('SubdomainRoute', 'Plugin/Obsi/Routing/Route');
+
+Router::connect('/stats', array('controller' => 'stats', 'action' => 'index', 'plugin' => 'obsi', 'subdomain' => 'stats'));
+Router::connect('/stats/search/user/*', array('controller' => 'stats', 'action' => 'search_user', 'plugin' => 'obsi', 'subdomain' => 'stats'));
+Router::connect('/stats/*', array('controller' => 'stats', 'action' => 'user', 'plugin' => 'obsi', 'subdomain' => 'stats'));
+Router::connect('/stats/f/*', array('controller' => 'stats', 'action' => 'faction', 'plugin' => 'obsi', 'subdomain' => 'stats'));*/
 
 Router::connect('/stats', array('controller' => 'stats', 'action' => 'index', 'plugin' => 'obsi'));
 Router::connect('/stats/search/user/*', array('controller' => 'stats', 'action' => 'search_user', 'plugin' => 'obsi'));
