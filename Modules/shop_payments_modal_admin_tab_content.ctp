@@ -58,7 +58,7 @@
                   }
                 } else {
                   echo '<div class="btn-group">';
-                    echo '<a href="#" class="btn btn-info take-psc" data-psc-id="'.$value['Paysafecard']['id'].'">Je la prends</a>';
+                    echo '<a href="#" class="btn btn-info take-psc" data-psc-id="'.$value['Paysafecard']['id'].'" data-psc-user-id="'.$value['Paysafecard']['user_id'].'">Je la prends</a>';
                     echo '<a href="'.$this->Html->url(array('controller' => 'paysafecard', 'action' => 'banUser', 'plugin' => 'obsi', 'admin' => true, $value['Paysafecard']['user_id'])).'" class="btn btn-warning">Interdire</a>';
                   echo '</div>';
                 }
@@ -80,6 +80,7 @@
 
     var el = $(this);
     var id = el.attr('data-psc-id');
+    var user_id = el.attr('data-psc-user-id');
     var td = el.parent();
 
     el.addClass('disabled').attr('disabled', true);
@@ -97,6 +98,7 @@
         })
         td.html('<a href="#" class="btn btn-success" onClick="valid('+id+')">Valider</a>');
         td.append('<a href="<?= $this->Html->url(array('controller' => 'paysafecard', 'action' => 'invalid', 'plugin' => 'obsi')) ?>/'+id+'" class="btn btn-danger" data-psc-id="'+id+'">Invalider</a>');
+        td.append('<a href="<?= $this->Html->url(array('controller' => 'paysafecard', 'action' => 'banUser', 'plugin' => 'obsi', 'admin' => true)) ?>/'+user_id+'" class="btn btn-warning">Interdire</a>');
       } else {
         el.removeClass('disabled').attr('disabled', false);
         $('#ajax-psc').fadeIn().html('<div class="alert alert-danger"><b>Erreur : </b> '+data.msg+'</div>');

@@ -21,6 +21,13 @@ class PaysafecardController extends ObsiAppController {
           $this->PscBan->save();
 
           $this->loadModel('Shop.Paysafecard');
+          // on cherche toutes les psc de l'user pour retirer si elles ont été prise en charge
+          $this->loadModel('Obsi.PscTaked');
+          $findPSC = $this->Paysafecard->find('all', array('conditions' => array('user_id' => $user_id)));
+          foreach ($findPSC as $key => $value) {
+            $this->PscTaked->deleteAll(array('psc_id' => $value['Paysafecard']['id']));
+          }
+          // on supprime toutes les psc de l'user
           $this->Paysafecard->deleteAll(array('user_id' => $user_id));
 
           $this->Session->setFlash('Vous avez bien banni l\'utilisateur '.$findUser['User']['pseudo'].' du moyen de paiement PaySafeCard !', 'default.success');
