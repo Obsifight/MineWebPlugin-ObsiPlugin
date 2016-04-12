@@ -54,7 +54,7 @@ class SanctionsComponent extends Object {
 
       $find = $this->__getDB()->fetchAll('SELECT BAT_player FROM BAT_players WHERE UUID=? LIMIT 0,1', array($UUID));
 
-      if(!empty($find) && isset($find[0]['BAT_players']['UUID'])) {
+      if(!empty($find) && isset($find[0]['BAT_players']['BAT_player'])) {
         $this->PseudoList[$UUID] = $find[0]['BAT_players']['BAT_player'];
         $this->PseudoList[$find[0]['BAT_players']['BAT_player']] = $UUID;
         return $find[0]['BAT_players']['BAT_player'];
@@ -120,8 +120,8 @@ class SanctionsComponent extends Object {
       unset($value);
     }
 
-    if(is_array($userKicks)) {
-      foreach ($userKicks as $key => $value) {
+    if(is_array($findKick)) {
+      foreach ($findKick as $key => $value) {
         $userKicks['list'][] = $value['BAT_kick'];
       }
       $userKicks['count'] = count($userKicks['list']);

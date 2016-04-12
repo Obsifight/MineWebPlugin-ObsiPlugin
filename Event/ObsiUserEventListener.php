@@ -19,8 +19,27 @@ class ObsiUserEventListener implements CakeEventListener {
           'beforeEditUser' => 'editUserOnAuth',
           'onBuy' => 'checkIfPseudo',
           'onLoadAdminPanel' => 'setVarsOnUserEdit',
-          'onLogin' => 'logConnection'
+          'onLogin' => 'logConnection',
+          'beforeSendResetPassMail' => 'checkIfEmailIsConfirmed'
       );
+  }
+
+  public function checkIfEmailIsConfirmed($event) {
+    $user_id = $event->data['user_id'];
+
+    if($this->controller->Configuration->getKey('confirm_mail_signup')) {
+
+      $userModel = ClassRegistry::init('User');
+      $find = $userModel->find('first', array('conditions' => array('id' => $user_id)));
+
+      if(!empty($find['User']['confirmed']) && date('Y-m-d H:i:s', strtotime($find['User']['confirmed'])) != $find['User']['confirmed']) {
+
+        echo json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas rénitialiser votre mot de passe si vous n\'avez pas confirmé votre email !'));
+
+        $event->stopPropagation();
+        return false;
+      }
+    }
   }
 
   public function updateHash($event) {

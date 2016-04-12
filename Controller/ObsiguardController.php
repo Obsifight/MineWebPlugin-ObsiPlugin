@@ -200,6 +200,15 @@ class ObsiguardController extends ObsiAppController {
   private function generateConfirmCode() {
     $this->autoRender = false;
 
+    // On vérifie qu'il a confirmé son email
+    if($this->Configuration->getKey('confirm_mail_signup')) {
+      $confirmed = $this->User->getKey('confirmed');
+
+      if(!empty($confirmed) && date('Y-m-d H:i:s', strtotime($confirmed)) != $confirmed) {
+        return false;
+      }
+    }
+
     // On génère la clé
       $key = substr(md5(rand().date('sihYdm')), 0, 10);
 
@@ -222,6 +231,7 @@ class ObsiguardController extends ObsiAppController {
 
       return true;
     }
+
 
     return false;
 
