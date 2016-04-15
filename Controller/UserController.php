@@ -348,12 +348,22 @@ class UserController extends ObsiAppController {
                       $this->Sanctions = $this->Components->load('Obsi.Sanctions');
                       if(!$this->Sanctions->isBanned($this->Sanctions->getUUID($this->User->getKey('pseudo')))) {
 
-        								$this->User->setKey('money', $money_user);
-        								$to_money = $this->User->getFromUser('money', $this->request->data['to']) + $how;
-        								$this->User->setToUser('money', $to_money, $this->request->data['to']);
+                        /*
+                          On vérifie qu'il est son email confirmé
+                        */
+                        $confirmed = $this->User->getKey('confirmed');
+                        if(empty($confirmed) || date('Y-m-d H:i:s', strtotime($confirmed)) == $confirmed) {
 
-        								$this->History->set('SEND_MONEY', 'shop', $this->request->data['to'].'|'.$how);
-        								echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $money_user));
+          								$this->User->setKey('money', $money_user);
+          								$to_money = $this->User->getFromUser('money', $this->request->data['to']) + $how;
+          								$this->User->setToUser('money', $to_money, $this->request->data['to']);
+
+          								$this->History->set('SEND_MONEY', 'shop', $this->request->data['to'].'|'.$how);
+          								echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $money_user));
+
+                        } else {
+                          echo json_encode(array('statut' => false, 'msg' => 'Vous n\'avez pas confirmé votre email ! Vous ne pouvez pas transférez vos points !'));
+                        }
 
                       } else {
                         echo json_encode(array('statut' => false, 'msg' => 'Vous êtes banni ! Vous ne pouvez pas transférez vos points !'));
