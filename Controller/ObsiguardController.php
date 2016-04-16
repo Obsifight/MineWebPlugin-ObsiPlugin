@@ -2,6 +2,19 @@
 
 class ObsiguardController extends ObsiAppController {
 
+  /*
+  Historique des changements d'ObsiGuard (bdd)
+
+  type =
+    1: enable
+    2: disable
+    3: addIP (champ obsiguard_ip)
+    4: removeIP (champ obsiguard_ip)
+    5: switchDynamicIP (activation),
+    6: switchDynamicIP (désactivation),
+    7: generateConfirmCode
+  */
+
 
   public function enable() {
     $this->autoRender = false;
@@ -20,6 +33,16 @@ class ObsiguardController extends ObsiAppController {
 
       // On le met dans la bdd site
         $this->User->setKey('obsi-obsiguard_enabled', 1);
+
+      // On met dans l'historique
+        $this->loadModel('Obsi.ObsiguardHistory');
+        $this->ObsiguardHistory->create();
+        $this->ObsiguardHistory->set(array(
+          'user_id' => $this->User->getKey('id'),
+          'ip' => $this->Util->getIP(),
+          'type' => 1
+        ));
+        $this->ObsiguardHistory->save();
 
       // On dis au JS que c'est bon
         echo json_encode(array('statut' => true));
@@ -48,6 +71,16 @@ class ObsiguardController extends ObsiAppController {
 
         // On le met dans la bdd site
           $this->User->setKey('obsi-obsiguard_enabled', 0);
+
+        // On met dans l'historique
+          $this->loadModel('Obsi.ObsiguardHistory');
+          $this->ObsiguardHistory->create();
+          $this->ObsiguardHistory->set(array(
+            'user_id' => $this->User->getKey('id'),
+            'ip' => $this->Util->getIP(),
+            'type' => 2
+          ));
+          $this->ObsiguardHistory->save();
 
         // On dis au JS que c'est bon
           echo json_encode(array('statut' => true));
@@ -84,6 +117,16 @@ class ObsiguardController extends ObsiAppController {
 
       // On va set
         $db->fetchAll('UPDATE joueurs SET dynamic_ip=? WHERE user_pseudo=?', array($status, $this->User->getKey('pseudo')));
+
+      // On met dans l'historique
+        $this->loadModel('Obsi.ObsiguardHistory');
+        $this->ObsiguardHistory->create();
+        $this->ObsiguardHistory->set(array(
+          'user_id' => $this->User->getKey('id'),
+          'ip' => $this->Util->getIP(),
+          'type' => ($status) ? 5 : 6
+        ));
+        $this->ObsiguardHistory->save();
 
       // On dis au JS que c'est bon
         echo json_encode(array('statut' => true));
@@ -131,6 +174,17 @@ class ObsiguardController extends ObsiAppController {
             // On va set
               $db->fetchAll('UPDATE joueurs SET authorised_ip=? WHERE user_pseudo=?', array($ipList, $this->User->getKey('pseudo')));
 
+            // On met dans l'historique
+              $this->loadModel('Obsi.ObsiguardHistory');
+              $this->ObsiguardHistory->create();
+              $this->ObsiguardHistory->set(array(
+                'user_id' => $this->User->getKey('id'),
+                'ip' => $this->Util->getIP(),
+                'type' => 3,
+                'obsiguard_ip' => $this->request->data['ip']
+              ));
+              $this->ObsiguardHistory->save();
+
             // On dis au JS que c'est bon
               echo json_encode(array('statut' => true));
 
@@ -173,6 +227,7 @@ class ObsiguardController extends ObsiAppController {
             $ipList = $find[0]['joueurs']['authorised_ip'];
             $ipList = @unserialize($find[0]['joueurs']['authorised_ip']);
             if(is_array($ipList) && isset($ipList[$id])) { // Si la clé existe
+              $obsiguard_ip = $ipList[$id];
               unset($ipList[$id]); // on la supprime
             }
           } else {
@@ -184,6 +239,17 @@ class ObsiguardController extends ObsiAppController {
 
         // On va set
           $db->fetchAll('UPDATE joueurs SET authorised_ip=? WHERE user_pseudo=?', array($ipList, $this->User->getKey('pseudo')));
+
+        // On met dans l'historique
+          $this->loadModel('Obsi.ObsiguardHistory');
+          $this->ObsiguardHistory->create();
+          $this->ObsiguardHistory->set(array(
+            'user_id' => $this->User->getKey('id'),
+            'ip' => $this->Util->getIP(),
+            'type' => 4,
+            'obsiguard_ip' => $obsiguard_ip
+          ));
+          $this->ObsiguardHistory->save();
 
         // On dis au JS que c'est bon
           echo json_encode(array('statut' => true));
@@ -228,6 +294,16 @@ class ObsiguardController extends ObsiAppController {
 
       // On l'enregistre
         $this->User->setKey('obsi-obsiguard_code', $key);
+
+      // On met dans l'historique
+        $this->loadModel('Obsi.ObsiguardHistory');
+        $this->ObsiguardHistory->create();
+        $this->ObsiguardHistory->set(array(
+          'user_id' => $this->User->getKey('id'),
+          'ip' => $this->Util->getIP(),
+          'type' => 7
+        ));
+        $this->ObsiguardHistory->save();
 
       return true;
     }

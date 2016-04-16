@@ -497,6 +497,8 @@ class UserController extends ObsiAppController {
 
           if(!empty($find)) {
 
+            $old_user_email = $this->User->getFromUser('email', $find['EmailUpdateRequest']['user_id']);
+
             // On met l'email à l'utilisateur
               $this->User->setToUser('email', $find['EmailUpdateRequest']['new_email'], $find['EmailUpdateRequest']['user_id']);
 
@@ -511,6 +513,17 @@ class UserController extends ObsiAppController {
 
             // On supprime la demande
               $this->EmailUpdateRequest->delete($find['EmailUpdateRequest']['id']);
+
+            // On le met dans l'historique
+              $this->loadModel('Obsi.EmailUpdateHistory');
+              $this->EmailUpdateHistory->create();
+              $this->EmailUpdateHistory->set(array(
+                'user_id' => $find['EmailUpdateRequest']['user_id'],
+                'old_email' => $old_user_email,
+                'new_email' => $find['EmailUpdateRequest']['new_email'],
+                'confirmed_by' => $this->User->getKey('id')
+              ));
+              $this->EmailUpdateHistory->save();
 
             // On redirige et préviens l'administrateur
               $this->Session->setFlash('La demande a bien été validé !', 'default.success');
