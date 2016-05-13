@@ -15,6 +15,8 @@ Router::connect('/p/nous-rejoindre/*', array('controller' => 'page', 'action' =>
 
 Router::connect('/getHeadSkin/*', array('controller' => 'ObsiAPI', 'action' => 'getHeadSkin', 'plugin' => 'obsi'));
 
+Router::connect('/admin/obsi', array('controller' => 'obsiadmin', 'action' => 'index', 'plugin' => 'obsi', 'prefix' => 'admin'));
+
 Router::connect('/admin/Obsi/*', array('controller' => 'user', 'action' => 'viewEmailUpdateRequests', 'plugin' => 'obsi', 'prefix' => 'admin'));
 
 Router::connect('/obsiapi/ipn/obsiguard/*', array('controller' => 'obsiguard', 'action' => 'ipn', 'plugin' => 'obsi'));

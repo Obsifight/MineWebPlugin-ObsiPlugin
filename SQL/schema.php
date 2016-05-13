@@ -80,6 +80,19 @@ class ObsiAppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
 	);
 
+	public $obsi__prizes = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'staff_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 50, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+		'commands' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
+	);
+
 	public $obsi__psc_bans = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
@@ -164,8 +177,7 @@ class ObsiAppSchema extends CakeSchema {
 		'obsi-obsiguard_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false),
 		'obsi-obsiguard_code' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 10, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 		'obsi-obsiguard_manage_key' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 10, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'obsi-can_update_pseudo' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false),
-		'obsi-event_money' => array('type' => 'integer', 'null' => true, 'default' => '0', 'length' => 20, 'unsigned' => false)
+		'obsi-can_update_pseudo' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false)
 	);
 
 }

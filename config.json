@@ -3,6 +3,8 @@
 	"slug":"obsi",
 	"nav":false,
 	"admin":true,
+	"admin_route":"/admin/obsi",
+  "admin_name":"Emails/Lots/Quotas",
 	"author":"Eywek",
 	"version":"0.1.0",
 	"apiID":-1,

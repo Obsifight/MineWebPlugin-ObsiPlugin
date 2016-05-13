@@ -306,7 +306,15 @@ class ObsiUserEventListener implements CakeEventListener {
           }
         }
 
-        if($isInStaff) {
+        $havePrize = false;
+        $this->Prize = ClassRegistry::init('Obsi.Prizes');
+        $findPrizes = $this->Prize->find('first', array('conditions' => array('user_id' => $user['id'])));
+        if(!empty($findPrizes)) {
+          $prize = $findPrizes['Prizes'];
+          $havePrize = true;
+        }
+
+        if($isInStaff || $havePrize) {
 
           $isNotConnected = true;
 
@@ -331,7 +339,9 @@ class ObsiUserEventListener implements CakeEventListener {
         'obsiguardStatus',
         'ip',
         'isInStaff',
-        'isNotConnected'
+        'isNotConnected',
+        'havePrize',
+        'prize'
       ));
 
       /*
