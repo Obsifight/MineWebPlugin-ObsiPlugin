@@ -582,6 +582,7 @@ class UserController extends ObsiAppController {
 
             // On lui génère un code de confirmation d'email
               $username = $this->User->getFromUser('pseudo', $find['EmailUpdateRequest']['user_id']);
+              $email = $this->User->getFromUser('email', $find['EmailUpdateRequest']['user_id']);
 
               $confirmCode = substr(md5(uniqid()), 0, 12);
 
@@ -593,7 +594,7 @@ class UserController extends ObsiAppController {
               ));
 
               $email = $this->Util->prepareMail(
-                $this->request->data['email'],
+                $email,
                 $this->Lang->get('EMAIL__TITLE_CONFIRM_MAIL'),
                 $emailMsg
               )->sendMail();
