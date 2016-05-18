@@ -402,6 +402,84 @@ class UserController extends ObsiAppController {
     }
 
   /*
+
+  */
+
+    private function __isValidEmail($email) {
+      if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+        $timeout = 10;
+
+        $url = 'http://mailtester.com/';
+        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1'; // simule Firefox 4.
+        $header[0] = "Accept: text/xml,application/xml,application/xhtml+xml,";
+        $header[0] .= "text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5";
+        $header[] = "Cache-Control: max-age=0";
+        $header[] = "Connection: keep-alive";
+        $header[] = "Keep-Alive: 300";
+        $header[] = "Accept-Charset: utf-8";
+        $header[] = "Accept-Language: fr"; // langue fr.
+        $header[] = "Pragma: "; // Simule un navigateur
+
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, array(
+          'email' => $email
+        ));
+        curl_setopt($curl, CURLOPT_COOKIESESSION, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($curl, CURLOPT_FAILONERROR, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+        $response = curl_exec($curl);
+        $time = curl_getinfo($curl, CURLINFO_CONNECT_TIME);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error = curl_error($curl);
+        curl_close($curl);
+
+        $responsesAvailable = array(
+          array(
+            'msg' => 'The domain is invalid or no mail server was found for it.',
+            'valid' => false,
+          ),
+          array(
+            'msg' => 'E-mail address does not exist on this server',
+            'valid' => false,
+          ),
+          array(
+            'msg' => 'Server doesn\'t allow e-mail address verification',
+            'valid' => true,
+          ),
+          array(
+            'msg' => 'E-mail address is valid',
+            'valid' => true,
+          )
+        );
+
+        if($code == 200) {
+          foreach ($responsesAvailable as $data) {
+
+            if(preg_match('#'.$data['msg'].'#i', $response)) {
+
+              return $data['valid'];
+
+              break;
+            }
+
+          }
+        } else {
+          return true;
+        }
+
+      }
+      return false;
+    }
+
+  /*
     Demande pour changement d'email
   */
 
@@ -412,7 +490,7 @@ class UserController extends ObsiAppController {
 
           if(!empty($this->request->data['newEmail']) && !empty($this->request->data['reason'])) {
 
-            if(filter_var($this->request->data['newEmail'], FILTER_VALIDATE_EMAIL)) {
+            if($this->__isValidEmail($this->request->data['newEmail'])) {
 
               $this->loadModel('Obsi.EmailUpdateRequest');
               // On cherche si il n'a pas déjà fais une demande
@@ -486,7 +564,7 @@ class UserController extends ObsiAppController {
       }
     }
 
-    public function validEmailUpdateRequest($id = null) {
+    public function admin_validEmailUpdateRequest($id = null) {
       $this->autoRender = false;
       if($this->isConnected AND $this->User->isAdmin()) {
 
@@ -501,6 +579,26 @@ class UserController extends ObsiAppController {
 
             // On met l'email à l'utilisateur
               $this->User->setToUser('email', $find['EmailUpdateRequest']['new_email'], $find['EmailUpdateRequest']['user_id']);
+
+            // On lui génère un code de confirmation d'email
+              $username = $this->User->getFromUser('pseudo', $find['EmailUpdateRequest']['user_id']);
+
+              $confirmCode = substr(md5(uniqid()), 0, 12);
+
+              $emailMsg = $this->Lang->get('EMAIL__CONTENT_CONFIRM_MAIL', array(
+                '{LINK}' => Router::url('/user/confirm/', true).$confirmCode,
+                '{IP}' => $this->Util->getIP(),
+                '{USERNAME}' => $username,
+                '{DATE}' => $this->Lang->date(date('Y-m-d H:i:s'))
+              ));
+
+              $email = $this->Util->prepareMail(
+                $this->request->data['email'],
+                $this->Lang->get('EMAIL__TITLE_CONFIRM_MAIL'),
+                $emailMsg
+              )->sendMail();
+
+              $this->User->setToUser('confirmed', $confirmCode, $find['EmailUpdateRequest']['user_id']);
 
             // On le notifie
               $this->loadModel('Obsi.EmailUpdateRequestResponse');
@@ -542,7 +640,7 @@ class UserController extends ObsiAppController {
       }
     }
 
-    public function invalidEmailUpdateRequest($id = null) {
+    public function admin_invalidEmailUpdateRequest($id = null) {
       $this->autoRender = false;
       if($this->isConnected AND $this->User->isAdmin()) {
 

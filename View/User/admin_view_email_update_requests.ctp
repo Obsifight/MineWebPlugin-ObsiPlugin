@@ -36,8 +36,8 @@ table tr td:last-child > div.btn-group {
                     <td><?= $Lang->date($value['EmailUpdateRequest']['created']) ?></td>
                     <td>
                       <div class="btn-group" role="group">
-                        <a href="<?= $this->Html->url(array('action' => 'invalidEmailUpdateRequest', $value['EmailUpdateRequest']['id'])) ?>" class="btn btn-danger">Refuser</a>
-                        <a href="<?= $this->Html->url(array('action' => 'validEmailUpdateRequest', $value['EmailUpdateRequest']['id'])) ?>" class="btn btn-success">Accepter</a>
+                        <a href="<?= $this->Html->url(array('plugin' => 'obsi', 'action' => 'invalidEmailUpdateRequest', $value['EmailUpdateRequest']['id'])) ?>" class="btn btn-danger">Refuser</a>
+                        <a href="<?= $this->Html->url(array('plugin' => 'obsi', 'action' => 'validEmailUpdateRequest', $value['EmailUpdateRequest']['id'])) ?>" class="btn btn-success">Accepter</a>
                       </div>
                     </td>
                   </tr>
