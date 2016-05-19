@@ -22,8 +22,6 @@ Router::connect('/admin/Obsi/*', array('controller' => 'user', 'action' => 'view
 Router::connect('/obsiapi/ipn/obsiguard/*', array('controller' => 'obsiguard', 'action' => 'ipn', 'plugin' => 'obsi'));
 Router::connect('/obsiapi/stats/getVisits', array('controller' => 'stats', 'action' => 'getVisits', 'plugin' => 'obsi'));
 
-Router::connect('/obsiapi/vote/*', array('controller' => 'vote', 'action' => 'getVisits', 'plugin' => 'obsi'));
-
 /*App::uses('SubdomainRoute', 'Plugin/Obsi/Routing/Route');
 
 Router::connect('/stats', array('controller' => 'stats', 'action' => 'index', 'plugin' => 'obsi', 'subdomain' => 'stats'));
