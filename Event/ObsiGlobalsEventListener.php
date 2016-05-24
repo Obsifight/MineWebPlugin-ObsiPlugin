@@ -38,7 +38,7 @@ class ObsiGlobalsEventListener implements CakeEventListener {
       'Sur la boutique, certaines solutions sont plus avantageuses que d\'autres.',
       'La question du Mercredi revient... chaque mercredi.',
       'La v4 d\'ObsiFight était en 1.8.',
-      'La limite d\'AP (5 claims) ne porte pas sur les coins.',
+      'La limite d\'AP (4 claims) ne porte pas sur les coins.',
       'La TNT au Xénotium a fait crasher le serveur, lors de son premier test.',
       'Le KingZombie est apparu pour la première fois lors de la v4.',
       'Herobrine a été retiré d\'ObsiFight.',
