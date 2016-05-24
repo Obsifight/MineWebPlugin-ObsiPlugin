@@ -809,6 +809,34 @@ class UserController extends ObsiAppController {
 
     }
 
+    public function admin_viewPseudoUpdates() {
+      if($this->isConnected AND $this->User->isAdmin()) {
+
+        $this->layout = 'admin';
+
+        $this->set('title_for_layout', 'Voir les changements de pseudos');
+
+        $this->loadModel('Obsi.PseudoUpdateHistory');
+        $updates = $this->PseudoUpdateHistory->find('all');
+
+        $usersToFind = array();
+        foreach ($updates as $key => $value) {
+          $usersToFind[] = $value['PseudoUpdateHistory']['user_id'];
+        }
+
+        $usersByID = array();
+        $findUsers = $this->User->find('all', array('conditions' => array('id' => $usersToFind)));
+        foreach ($findUsers as $key => $value) {
+          $usersByID[$value['User']['id']] = $value['User']['pseudo'];
+        }
+
+        $this->set(compact('updates', 'usersByID'));
+
+      } else {
+        throw new ForbiddenException();
+      }
+    }
+
   /*
     Se faire switch de serveur
   */

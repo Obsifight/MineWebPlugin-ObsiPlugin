@@ -36,14 +36,47 @@ class CapeController extends ObsiAppController {
           exit;
         }
 
+        ftp_close($conn_id);
+
         $this->User->setKey('obsi-cape_uploaded', 1);
 	      echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('API__UPLOAD_CAPE_SUCCESS')));
 
 			}
 
 		} else {
-			new ForbiddenException();
+			throw new ForbiddenException();
 		}
+  }
+
+  public function delete() {
+    $this->autoRender = false;
+
+		if($this->isConnected) {
+
+      $conn_id = @ftp_connect(Configure::read('ObsiPlugin.capes.upload.server'));
+      if(!@ftp_login($conn_id, Configure::read('ObsiPlugin.capes.upload.user'), Configure::read('ObsiPlugin.capes.upload.password'))) {
+        $this->Session->setFlash('Erreur interne lors de la suppression.', 'default.error');
+        $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+      }
+
+      $filename = Configure::read('ObsiPlugin.capes.upload.filename');
+      $filename = str_replace('{PLAYER}', $this->User->getKey('pseudo'), $filename);
+
+      if(!ftp_delete($conn_id, $filename)) {
+        $this->Session->setFlash('Erreur lors de la suppression.', 'default.error');
+        $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+      }
+
+      ftp_close($conn_id);
+
+      $this->User->setKey('obsi-cape_uploaded', 0);
+
+      $this->Session->setFlash('Votre cape a bien été supprimée !', 'default.success');
+      $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+
+    } else {
+      throw new ForbiddenException();
+    }
   }
 
 }
