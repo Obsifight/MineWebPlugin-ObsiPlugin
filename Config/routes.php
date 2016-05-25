@@ -33,3 +33,10 @@ Router::connect('/stats', array('controller' => 'stats', 'action' => 'index', 'p
 Router::connect('/stats/search/user/*', array('controller' => 'stats', 'action' => 'search_user', 'plugin' => 'obsi'));
 Router::connect('/stats/*', array('controller' => 'stats', 'action' => 'user', 'plugin' => 'obsi'));
 Router::connect('/stats/f/*', array('controller' => 'stats', 'action' => 'faction', 'plugin' => 'obsi'));
+
+Router::connect('/classement-factions', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
+Router::connect('/factions', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
+Router::connect('/classement/factions', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
+Router::connect('/classement-factions/*', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
+Router::connect('/factions/*', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
+Router::connect('/classement/factions/*', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
