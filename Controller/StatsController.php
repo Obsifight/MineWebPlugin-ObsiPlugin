@@ -100,16 +100,18 @@ class StatsController extends ObsiAppController {
 
     // On récupère les heures les plus fréquentées (max 5)
       $findPeakTimes['days'] = $this->CountPlayersLog->query(
-        'SELECT created, AVG(players_online) AS `average_players_online`
+        'SELECT created, AVG(players_online) AS `average_players_online`, WEEKDAY(created) AS `day`
         FROM obsi__count_players_logs
-        GROUP BY DAY(created)
+        GROUP BY WEEKDAY(created)
         ORDER BY AVG(players_online) DESC
         LIMIT 3');
 
     // On les parcours, pour récupérer la moyenne de joueurs
+
       foreach ($findPeakTimes['days'] as $key => $value) {
 
         $day = date('w', strtotime($value['obsi__count_players_logs']['created']));
+
         switch ($day) { // On converti en français
           case 0:
             $day = 'Dimanche';

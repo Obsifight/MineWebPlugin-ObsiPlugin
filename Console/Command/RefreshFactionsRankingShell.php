@@ -99,7 +99,7 @@ class RefreshFactionsRankingShell extends AppShell {
           On calcule les points
         */
 
-          $factionPoints = $this->__calculPoints($factionKills, $factionDeaths, $factionGoldsPieces, $factionEndEvents, $factionKingzombieEvents);
+          list($factionPoints, $factionPointsDetails) = $this->__calculPoints($factionKills, $factionDeaths, $factionGoldsPieces, $factionEndEvents, $factionKingzombieEvents);
 
         /*
           On enregistre les données dans la variable
@@ -113,7 +113,8 @@ class RefreshFactionsRankingShell extends AppShell {
             'golds_pieces' => $factionGoldsPieces,
             'end_events' => $factionEndEvents,
             'kingzombie_events' => $factionKingzombieEvents,
-            'points' => $factionPoints
+            'points' => $factionPoints,
+						'points_details' => json_encode($factionPointsDetails)
           );
 
 
@@ -146,37 +147,44 @@ class RefreshFactionsRankingShell extends AppShell {
   private function __calculPoints($kills, $deaths, $goldsPieces, $endEvents, $kingZombieEvents) {
 
     $points = 0;
+		$factionPointsDetails = array(
+			'kills' => 0,
+			'deaths' => 0,
+			'goldsPieces' => 0,
+			'endEvents' => 0,
+			'kingZombieEvents' => 0
+		);
 
     /*
       En fonction des kills
     */
       if($kills < 1000) {
 
-        $points += 10 * $kills;
+        $points += $factionPointsDetails['kills'] = 10 * $kills;
 
       } elseif($kills < 2000) {
 
-        $points += 12 * $kills;
+        $points += $factionPointsDetails['kills'] = 12 * $kills;
 
       } elseif($kills < 3000) {
 
-        $points += 15 * $kills;
+        $points += $factionPointsDetails['kills'] = 15 * $kills;
 
       } elseif($kills < 4000) {
 
-        $points += 17 * $kills;
+        $points += $factionPointsDetails['kills'] = 17 * $kills;
 
       } elseif($kills < 5000) {
 
-        $points += 19 * $kills;
+        $points += $factionPointsDetails['kills'] = 19 * $kills;
 
       } elseif($kills < 6000) {
 
-        $points += 25 * $kills;
+        $points += $factionPointsDetails['kills'] = 25 * $kills;
 
       } else {
 
-        $points += 27 * $kills;
+        $points += $factionPointsDetails['kills'] = 27 * $kills;
 
       }
 
@@ -185,35 +193,35 @@ class RefreshFactionsRankingShell extends AppShell {
     */
       if($deaths < 1000) {
 
-        $points += -12 * $deaths;
+        $points += $factionPointsDetails['deaths'] = -12 * $deaths;
 
       } elseif($deaths < 2000) {
 
-        $points += -14 * $kills;
+        $points += $factionPointsDetails['deaths'] = -14 * $kills;
 
       } elseif($deaths < 3000) {
 
-        $points += -17 * $deaths;
+        $points += $factionPointsDetails['deaths'] = -17 * $deaths;
 
       } elseif($deaths < 4000) {
 
-        $points += -19 * $deaths;
+        $points += $factionPointsDetails['deaths'] = -19 * $deaths;
 
       } elseif($deaths < 5000) {
 
-        $points += -21 * $deaths;
+        $points += $factionPointsDetails['deaths'] = -21 * $deaths;
 
       } elseif($deaths < 6000) {
 
-        $points += -27 * $deaths;
+        $points += $factionPointsDetails['deaths'] = -27 * $deaths;
 
       } else {
 
-        $points += -29 * $deaths;
+        $points += $factionPointsDetails['deaths'] = -29 * $deaths;
 
       }
 
-    return $points;
+    return array($points, $factionPointsDetails);
 
   }
 
