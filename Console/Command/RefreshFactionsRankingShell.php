@@ -94,6 +94,7 @@ class RefreshFactionsRankingShell extends AppShell {
           $factionGoldsPieces = $this->__getGoldspiecesOf($players);
           $factionEndEvents = $this->__getEndEventsOf($players);
           $factionKingzombieEvents = $this->__getKingzombieEventsOf($players);
+					$factionWarsPoints = $this->__getWarsPoints($factionName);
 
         /*
           On calcule les points
@@ -113,6 +114,7 @@ class RefreshFactionsRankingShell extends AppShell {
             'golds_pieces' => $factionGoldsPieces,
             'end_events' => $factionEndEvents,
             'kingzombie_events' => $factionKingzombieEvents,
+						'factions_war' => $factionWarsPoints
             'points' => $factionPoints,
 						'points_details' => json_encode($factionPointsDetails)
           );
@@ -153,7 +155,8 @@ class RefreshFactionsRankingShell extends AppShell {
 			'deaths' => 0,
 			'goldsPieces' => 0,
 			'endEvents' => 0,
-			'kingZombieEvents' => 0
+			'kingZombieEvents' => 0,
+			'factions_war' => 0
 		);
 
     /*
@@ -348,5 +351,13 @@ class RefreshFactionsRankingShell extends AppShell {
     return $kingzombieEvents;
 
   }
+
+	/*
+		Récupère les points de Guerres de factions
+	*/
+
+	private function __getWarsPoints($factionName) {
+		return 0; // TODO
+	}
 
 }

@@ -7,7 +7,7 @@ class FactionsRankingController extends ObsiAppController {
     /*$this->loadModel('Obsi.FactionsRanking');
     $lastUpdate = $this->FactionsRanking->query("SELECT CREATE_TIME FROM information_schema.tables WHERE  TABLE_SCHEMA = 'web_v5' AND TABLE_NAME = 'obsi__factions_rankings'");
     $lastUpdate = $lastUpdate[0]['tables']['CREATE_TIME'];*/
-    $lastUpdate = filemtime(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions');
+    $lastUpdate = date('Y-m-d H:i:s', filemtime(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions'));
 
     $this->set(compact('lastUpdate'));
   }
@@ -35,7 +35,7 @@ class FactionsRankingController extends ObsiAppController {
 
         */
 
-          $result[$i]['golds_pieces'] = $result[$i]['end_events'] = $result[$i]['kingzombie_events'] = '<span class="label label-warning">Bientôt disponible</span>';
+          $result[$i]['golds_pieces'] = $result[$i]['end_events'] = $result[$i]['kingzombie_events'] = $result[$i]['factions_war'] = '<span class="label label-warning">Bientôt disponible</span>';
 
 
         unset($result[$i]['id']);
@@ -58,7 +58,7 @@ class FactionsRankingController extends ObsiAppController {
                 <p class="text-center"><b>Morts : </b>'.$result[$i]['deaths'].' &nbsp;&nbsp;<i class="text-danger"> '.number_format($result[$i]['points_details']['deaths'], 0, ',', ' ').' points</i></p>
                 <p class="text-center"><b>Pièces d\'or : </b>'.$result[$i]['golds_pieces'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['golds_pieces'], 0, ',', ' ').' points</i></p>
                 <p class="text-center"><b>Events end gagnés : </b>'.$result[$i]['end_events'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['end_events'], 0, ',', ' ').' points</i></p>
-                <p class="text-center"><b>Events KingZombie gagnés : </b>'.$result[$i]['kingzombie_events'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['kingzombie_events'], 0, ',', ' ').' points</i></p>
+                <p class="text-center"><b>Score de guerre de factions : </b>'.$result[$i]['factions_war'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['factions_war'], 0, ',', ' ').' points</i></p>
                 <hr>
                 <p class="text-center"><b>Total : </b> '.number_format($result[$i]['points'], 0, ',', ' ').' points</p>
               </div>
