@@ -114,7 +114,7 @@ class RefreshFactionsRankingShell extends AppShell {
             'golds_pieces' => $factionGoldsPieces,
             'end_events' => $factionEndEvents,
             'kingzombie_events' => $factionKingzombieEvents,
-						'factions_war' => $factionWarsPoints
+						'factions_war' => $factionWarsPoints,
             'points' => $factionPoints,
 						'points_details' => json_encode($factionPointsDetails)
           );
