@@ -197,7 +197,7 @@ class RefreshFactionsRankingShell extends AppShell {
 
       } elseif($deaths < 2000) {
 
-        $points += $factionPointsDetails['deaths'] = -14 * $kills;
+        $points += $factionPointsDetails['deaths'] = -14 * $deaths;
 
       } elseif($deaths < 3000) {
 
