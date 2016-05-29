@@ -136,6 +136,7 @@ class RefreshFactionsRankingShell extends AppShell {
       // On save
   		  $this->FactionsRanking->saveMany($savedData);
 
+		file_put_contents(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions');
 
   	$this->out('Done.');
   }

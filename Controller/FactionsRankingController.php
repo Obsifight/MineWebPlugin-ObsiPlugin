@@ -4,9 +4,10 @@ class FactionsRankingController extends ObsiAppController {
   public function index() {
     $this->set('title_for_layout', 'Classement des factions');
 
-    $this->loadModel('Obsi.FactionsRanking');
+    /*$this->loadModel('Obsi.FactionsRanking');
     $lastUpdate = $this->FactionsRanking->query("SELECT CREATE_TIME FROM information_schema.tables WHERE  TABLE_SCHEMA = 'web_v5' AND TABLE_NAME = 'obsi__factions_rankings'");
-    $lastUpdate = $lastUpdate[0]['tables']['CREATE_TIME'];
+    $lastUpdate = $lastUpdate[0]['tables']['CREATE_TIME'];*/
+    $lastUpdate = filemtime(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions');
 
     $this->set(compact('lastUpdate'));
   }
