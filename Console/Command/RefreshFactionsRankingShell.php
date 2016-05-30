@@ -63,20 +63,26 @@ class RefreshFactionsRankingShell extends AppShell {
         $this->out($i.'/'.$totalFactions. ' - '.$factionName);
 
         /*
-          On récupère le chef et les joueurs présents
+          On récupère le chef et les joueurs présents et le power
         */
-          $getLeaderAndPlayers = $Server->call(array('getFactionPlayers' => $factionName, 'getFactionLeader' => $factionName), true, $server_id);
+          $getLeaderAndPlayersWithPower = $Server->call(array('getFactionPlayers' => $factionName, 'getFactionLeader' => $factionName, 'getFactionPowers' => $factionName), true, $server_id);
 
-          if(!isset($getLeaderAndPlayers['getFactionLeader'])) {
+          if(!isset($getLeaderAndPlayersWithPower['getFactionLeader'])) {
             continue;
           }
-          $leaderName = $getLeaderAndPlayers['getFactionLeader'];
+          $leaderName = $getLeaderAndPlayersWithPower['getFactionLeader'];
 
-          if(!isset($getLeaderAndPlayers['getFactionPlayers'])) {
+          if(!isset($getLeaderAndPlayersWithPower['getFactionPlayers'])) {
             continue;
           }
-          $players = $getLeaderAndPlayers['getFactionPlayers'];
+          $players = $getLeaderAndPlayersWithPower['getFactionPlayers'];
           $players = explode(', ', $players);
+
+					if(isset($getLeaderAndPlayersWithPower['getFactionPlayers'])) {
+						$factionPower = $getLeaderAndPlayersWithPower['getFactionPowers'];
+					} else {
+						$factionPower = 0;
+					}
 
         /*
           On récupère les kills/deaths/ratio
@@ -100,7 +106,7 @@ class RefreshFactionsRankingShell extends AppShell {
           On calcule les points
         */
 
-          list($factionPoints, $factionPointsDetails) = $this->__calculPoints($factionKills, $factionDeaths, $factionGoldsPieces, $factionEndEvents, $factionKingzombieEvents);
+          list($factionPoints, $factionPointsDetails) = $this->__calculPoints($factionKills, $factionDeaths, $factionPower, $factionGoldsPieces, $factionEndEvents, $factionKingzombieEvents, $factionWarsPoints);
 
         /*
           On enregistre les données dans la variable
@@ -110,6 +116,7 @@ class RefreshFactionsRankingShell extends AppShell {
             'leader' => $leaderName,
             'kills' => $factionKills,
             'deaths' => $factionDeaths,
+						'power' => $factionPower,
             'ratio' => $factionRatio,
             'golds_pieces' => $factionGoldsPieces,
             'end_events' => $factionEndEvents,
@@ -147,12 +154,13 @@ class RefreshFactionsRankingShell extends AppShell {
     Calcul les points en fonction des donnés passées
   */
 
-  private function __calculPoints($kills, $deaths, $goldsPieces, $endEvents, $kingZombieEvents) {
+  private function __calculPoints($kills, $deaths, $power, $goldsPieces, $endEvents, $kingZombieEvents, $factionWarsPoints) {
 
     $points = 0;
 		$factionPointsDetails = array(
 			'kills' => 0,
 			'deaths' => 0,
+			'power' => 0,
 			'goldsPieces' => 0,
 			'endEvents' => 0,
 			'kingZombieEvents' => 0,

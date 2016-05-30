@@ -9,7 +9,85 @@ class FactionsRankingController extends ObsiAppController {
     $lastUpdate = $lastUpdate[0]['tables']['CREATE_TIME'];*/
     $lastUpdate = date('Y-m-d H:i:s', filemtime(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions'));
 
-    $this->set(compact('lastUpdate'));
+    $factionsData = array(
+      array(
+        'tableName' => '#',
+        'ajaxName' => 'position'
+      ),
+      array(
+        'tableName' => 'Nom',
+        'ajaxName' => 'name'
+      ),
+      /*array(
+        'tableName' => 'Chef',
+        'ajaxName' => 'leader'
+      ),*/
+      array(
+        'tableName' => 'Tués',
+        'ajaxName' => 'kills'
+      ),
+      array(
+        'tableName' => 'Morts',
+        'ajaxName' => 'deaths'
+      ),
+      /*array(
+        'tableName' => 'Ratio',
+        'ajaxName' => 'ratio'
+      ),*/
+      array(
+        'tableName' => 'Power',
+        'ajaxName' => 'power'
+      ),
+      array(
+        'tableName' => 'Pièces d\'or',
+        'ajaxName' => 'golds_pieces'
+      ),
+      array(
+        'tableName' => 'Events end',
+        'ajaxName' => 'end_events'
+      ),
+      array(
+        'tableName' => 'Events KingZombie',
+        'ajaxName' => 'kingzombie_events'
+      ),
+      array(
+        'tableName' => 'Guerre',
+        'ajaxName' => 'factions_war'
+      ),
+      array(
+        'tableName' => 'Points',
+        'ajaxName' => 'points'
+      )
+    );
+
+    $pointsCalcul = array(
+      array(
+        'title' => 'Tués',
+        'td' => array(
+          'En dessous de <b>1 000</b>' => '10 points/tués',
+          'De <b>1 000</b> à <b>2 000</b>' => '12 points/tués',
+          'De <b>2 000</b> à <b>3 000</b>' => '15 points/tués',
+          'De <b>3 000</b> à <b>4 000</b>' => '17 points/tués',
+          'De <b>4 000</b> à <b>5 000</b>' => '19 points/tués',
+          'De <b>5 000</b> à <b>6 000</b>' => '25 points/tués',
+          'Au dessus de <b>6 000</b>' => '27 points/tués'
+        )
+      ),
+      array(
+        'title' => 'Morts',
+        'td' => array(
+          'En dessous de <b>1 000</b>' => '-12 points/morts',
+          'De <b>1 000</b> à <b>2 000</b>' => '-14 points/morts',
+          'De <b>2 000</b> à <b>3 000</b>' => '-17 points/morts',
+          'De <b>3 000</b> à <b>4 000</b>' => '-19 points/morts',
+          'De <b>4 000</b> à <b>5 000</b>' => '-21 points/morts',
+          'De <b>5 000</b> à <b>6 000</b>' => '-27 points/morts',
+          'Au dessus de <b>6 000</b>' => '-29 points/morts'
+        )
+      )
+    );
+
+    $this->set(compact('lastUpdate', 'factionsData', 'pointsCalcul'));
   }
 
 
@@ -69,6 +147,14 @@ class FactionsRankingController extends ObsiAppController {
 
         $result[$i]['name'] = '<b>'.$result[$i]['name'].'</b>';
         $result[$i]['leader'] = '<a style="color: #A94545;" href="'.Router::url('/stats/'.$result[$i]['leader']).'">'.$result[$i]['leader'].'</a>';
+
+
+        /*
+          Suppression de données
+        */
+
+          unset($result[$i]['leader']);
+          unset($result[$i]['ratio']);
 
         $i++;
 
