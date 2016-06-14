@@ -79,6 +79,7 @@ class ObsiAppSchema extends CakeSchema {
 		'end_events' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
 		'kingzombie_events' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
 		'factions_war' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'totems' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
 		'points' => array('type' => 'float', 'null' => false, 'default' => null, 'unsigned' => false),
 		'points_details' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
 		'indexes' => array(

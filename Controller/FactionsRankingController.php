@@ -55,6 +55,10 @@ class FactionsRankingController extends ObsiAppController {
         'ajaxName' => 'factions_war'
       ),
       array(
+        'tableName' => 'Totems',
+        'ajaxName' => 'totems'
+      ),
+      array(
         'tableName' => 'Points',
         'ajaxName' => 'points'
       )
@@ -137,6 +141,7 @@ class FactionsRankingController extends ObsiAppController {
                 <p class="text-center"><b>Pièces d\'or : </b>'.$result[$i]['golds_pieces'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['golds_pieces'], 0, ',', ' ').' points</i></p>
                 <p class="text-center"><b>Events end gagnés : </b>'.$result[$i]['end_events'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['end_events'], 0, ',', ' ').' points</i></p>
                 <p class="text-center"><b>Score de guerre de factions : </b>'.$result[$i]['factions_war'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['factions_war'], 0, ',', ' ').' points</i></p>
+                <p class="text-center"><b>Totem récupérés : </b>'.$result[$i]['totems'].' &nbsp;&nbsp;<i class="text-success">+ '.number_format($result[$i]['points_details']['totems'], 0, ',', ' ').' points</i></p>
                 <hr>
                 <p class="text-center"><b>Total : </b> '.number_format($result[$i]['points'], 0, ',', ' ').' points</p>
               </div>

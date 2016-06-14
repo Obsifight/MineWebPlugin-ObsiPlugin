@@ -1,7 +1,7 @@
 <?php
 class RefreshFactionsRankingShell extends AppShell {
 
-	public $uses = array('Obsi.FactionsRanking', 'Obsi.ServerFactionsRanking'); //Models
+	public $uses = array('Obsi.FactionsRanking', 'Obsi.ServerFactionsRanking', 'Obsi.TotemsWins'); //Models
 /*
   private $columnsToSave = array(
     'position',
@@ -103,12 +103,13 @@ class RefreshFactionsRankingShell extends AppShell {
           $factionEndEvents = $this->__getEndEventsOf($players);
           $factionKingzombieEvents = $this->__getKingzombieEventsOf($players);
 					$factionWarsPoints = $this->__getWarsPoints($factionName);
+					$factionTotemsWins = $this->__getTotemsWins($factionName);
 
         /*
           On calcule les points
         */
 
-          list($factionPoints, $factionPointsDetails) = $this->__calculPoints($factionKills, $factionDeaths, $factionPower, $factionGoldsPieces, $factionEndEvents, $factionKingzombieEvents, $factionWarsPoints);
+          list($factionPoints, $factionPointsDetails) = $this->__calculPoints($factionKills, $factionDeaths, $factionPower, $factionGoldsPieces, $factionEndEvents, $factionKingzombieEvents, $factionWarsPoints, $factionTotemsWins);
 
         /*
           On enregistre les données dans la variable
@@ -124,6 +125,7 @@ class RefreshFactionsRankingShell extends AppShell {
             'end_events' => $factionEndEvents,
             'kingzombie_events' => $factionKingzombieEvents,
 						'factions_war' => $factionWarsPoints,
+						'totems' => $factionTotemsWins,
             'points' => $factionPoints,
 						'points_details' => json_encode($factionPointsDetails)
           );
@@ -202,10 +204,10 @@ class RefreshFactionsRankingShell extends AppShell {
   }
 
   /*
-    Calcul les points en fonction des donnés passées
+    Calcul les points en fonction des donnés passées TO REWRITE {TODO}
   */
 
-  private function __calculPoints($kills, $deaths, $power, $goldsPieces, $endEvents, $kingZombieEvents, $factionWarsPoints) {
+  private function __calculPoints($kills, $deaths, $power, $goldsPieces, $endEvents, $kingZombieEvents, $factionWarsPoints, $factionTotemsWins) {
 
     $points = 0;
 		$factionPointsDetails = array(
@@ -215,7 +217,8 @@ class RefreshFactionsRankingShell extends AppShell {
 			'goldsPieces' => 0,
 			'endEvents' => 0,
 			'kingZombieEvents' => 0,
-			'factions_war' => 0
+			'factions_war' => 0,
+			'totems' => 0
 		);
 
     /*
@@ -358,7 +361,7 @@ class RefreshFactionsRankingShell extends AppShell {
 
 
   /*
-    Récupère les events end d'un joueur ou d'une liste de joueurs
+    Récupère les events end d'un joueur ou d'une liste de joueurs TODO
   */
 
   private function __getEndEventsOf($users) {
@@ -385,7 +388,7 @@ class RefreshFactionsRankingShell extends AppShell {
   }
 
   /*
-    Récupère les events KingZombie d'un joueur ou d'une liste de joueurs
+    Récupère les events KingZombie d'un joueur ou d'une liste de joueurs TODO
   */
 
   private function __getKingzombieEventsOf($users) {
@@ -412,11 +415,32 @@ class RefreshFactionsRankingShell extends AppShell {
   }
 
 	/*
-		Récupère les points de Guerres de factions
+		Récupère les points de Guerres de factions TODO
 	*/
 
 	private function __getWarsPoints($factionName) {
 		return 0; // TODO
+	}
+
+	/*
+		Récupère le nombre de victoire de totem d'une faction TODO
+	*/
+
+	private function __getTotemsWins($factionName) {
+
+		// Setup la db
+			App::uses('ConnectionManager', 'Model');
+			$con = new ConnectionManager;
+			ConnectionManager::create('Totems', Configure::read('Obsi.db.Totems'));
+			$this->TotemsWins->setDataSource('Totems');
+			$this->TotemsWins->tablePrefix = false;
+			$this->TotemsWins->useTable = 'totemwins';
+
+		// On récupère
+			$query = $this->TotemsWins->find('first', array('conditions' => array('fname' => $factionName)));
+
+		// On retourne le tout
+			return (!empty($query) && isset($query['TotemsWins']['win_number'])) ? intval($query['TotemsWins']['win_number']) : 0;
 	}
 
 }
