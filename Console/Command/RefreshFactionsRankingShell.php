@@ -1,7 +1,7 @@
 <?php
 class RefreshFactionsRankingShell extends AppShell {
 
-	public $uses = array('Obsi.FactionsRanking'); //Models
+	public $uses = array('Obsi.FactionsRanking', 'Obsi.ServerFactionsRanking'); //Models
 /*
   private $columnsToSave = array(
     'position',
@@ -17,6 +17,7 @@ class RefreshFactionsRankingShell extends AppShell {
 */
   public function main() {
 
+		$startTime = microtime(true);
     $this->out('<info>Init.</info>');
 
     /*
@@ -30,6 +31,7 @@ class RefreshFactionsRankingShell extends AppShell {
       $server_id = Configure::read('ObsiPlugin.server.pvp.id');
       $grossData = array(); // Données non brutes non traitées
       $savedData = array(); // Données traitées à enregistrer
+			$rankData = array(); // Données traitées à enregistrer sur la db du serveur
 
     /*
       On récupère les données (globales)
@@ -126,6 +128,11 @@ class RefreshFactionsRankingShell extends AppShell {
 						'points_details' => json_encode($factionPointsDetails)
           );
 
+					$rankData[] = array(
+						'faction_name' => $factionName,
+						'points' => $factionPoints
+					);
+
 
       }
 
@@ -135,19 +142,63 @@ class RefreshFactionsRankingShell extends AppShell {
 
     $this->out('<info>Save data...</info>');
 
+			/*
+					Base de données site
+			*/
 
-      // On vide la db
-        $this->FactionsRanking->deleteAll(array('1' => '1'));
+	      // On vide la db
+	        $this->FactionsRanking->deleteAll(array('1' => '1'));
 
-      // On actualise l'auto_increment
-        $this->FactionsRanking->query('ALTER TABLE `obsi__factions_rankings` AUTO_INCREMENT = 1;');
+	      // On actualise l'auto_increment
+	        $this->FactionsRanking->query('ALTER TABLE `obsi__factions_rankings` AUTO_INCREMENT = 1;');
 
-      // On save
-  		  $this->FactionsRanking->saveMany($savedData);
+	      // On save
+	  		  $this->FactionsRanking->saveMany($savedData);
+
+
+			/*
+					Base de données serveur
+			*/
+
+				// On se connecte à la db
+					App::uses('ConnectionManager', 'Model');
+					$con = new ConnectionManager;
+					ConnectionManager::create('PrefixChat', Configure::read('Obsi.db.PrefixChat'));
+					$this->ServerFactionsRanking->setDataSource('PrefixChat');
+					$this->ServerFactionsRanking->tablePrefix = false;
+					$this->ServerFactionsRanking->useTable = 'factions_rankings';
+
+				// On vide la db
+					$this->ServerFactionsRanking->deleteAll(array('1' => '1'));
+
+				// On actualise l'auto_increment
+					$this->ServerFactionsRanking->query('ALTER TABLE `factions_rankings` AUTO_INCREMENT = 1;');
+
+				// On classe les factions
+					uasort($rankData, function($a, $b) {
+						return $b['points'] - $a['points'];
+					});
+
+				// On supprime la colonne points & on met la position
+					$i = 0;
+					while ($i <= $totalFactions) {
+						unset($rankData[$i]['points']);
+
+						if(!isset($rankData[$i]['faction_name'])) {
+							unset($rankData[$i]);
+							$i++;
+							continue;
+						}
+
+						$i++;
+					}
+
+				// On save
+					$this->ServerFactionsRanking->saveMany($rankData);
 
 		file_put_contents(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions', '1');
 
-  	$this->out('Done.');
+  	$this->out('['.round((microtime(true) - $startTime), 2).' sec] Done.');
   }
 
   /*

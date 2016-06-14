@@ -1,4 +1,4 @@
-<?php 
+<?php
 class ObsiAppSchema extends CakeSchema {
 
 	public $file = 'schema.php';
