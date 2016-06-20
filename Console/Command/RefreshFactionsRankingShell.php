@@ -198,7 +198,17 @@ class RefreshFactionsRankingShell extends AppShell {
 				// On save
 					$this->ServerFactionsRanking->saveMany($rankData);
 
+		$this->out('<info>Data saved! Send command to server..</info>');
+
 		file_put_contents(ROOT.DS.'app'.DS.'tmp'.DS.'cache'.DS.'refresh.factions', '1');
+
+			App::uses('ComponentCollection', 'Controller');
+			App::uses('ServerComponent', 'Controller/Component');
+			$Collection = new ComponentCollection();
+			$Server = new ServerComponent($Collection);
+			$server_id = Configure::read('ObsiPlugin.server.pvp.id');
+
+			var_dump($Server->call(array('performCommand' => 'prefixreload'), true, $server_id));
 
   	$this->out('['.round((microtime(true) - $startTime), 2).' sec] Done.');
   }
