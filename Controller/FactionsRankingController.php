@@ -117,7 +117,7 @@ class FactionsRankingController extends ObsiAppController {
 
         */
 
-          $result[$i]['golds_pieces'] = $result[$i]['end_events'] = $result[$i]['kingzombie_events'] = $result[$i]['factions_war'] = '<span class="label label-warning">Bientôt disponible</span>';
+          $result[$i]['golds_pieces'] = $result[$i]['kingzombie_events'] = $result[$i]['factions_war'] = '<span class="label label-warning">Bientôt disponible</span>';
 
 
         unset($result[$i]['id']);
@@ -172,6 +172,45 @@ class FactionsRankingController extends ObsiAppController {
     }
   }
 
+  public function admin_add_events_end_win() {
+    if($this->isConnected && $this->User->isAdmin()) {
 
+      $this->layout = 'admin';
+      $this->set('title_for_layout', 'Ajouter une victoire pour un event End');
+
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
+  public function admin_add_events_end_win_ajax() {
+    if($this->isConnected && $this->User->isAdmin()) {
+      if($this->request->is('ajax')) {
+
+        $this->autoRender = false;
+
+        if(!empty($this->request->data['name'])) {
+
+          $this->loadModel('Obsi.EndEventsWin');
+          $this->EndEventsWin->create();
+          $this->EndEventsWin->set(array(
+            'faction_name' => $this->request->data['name'],
+            'user_id' => $this->User->getKey('id')
+          ));
+          $this->EndEventsWin->save();
+
+          $this->Session->setFlash('La victoire a bien été sauvegardée !', 'default.success');
+          echo json_encode(array('statut' => true, 'msg' => 'La victoire a bien été sauvegardée !'));
+
+        } else {
+          echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__FILL_ALL_FIELDS')));
+        }
+      } else {
+        throw new NotFoundException();
+      }
+    } else {
+      throw new ForbiddenException();
+    }
+  }
 
 }

@@ -75,7 +75,15 @@ class PaysafecardController extends ObsiAppController {
                 )
               ));
 
-              $quotas = Configure::read('Obsi.shop.psc.quotas');
+              //$quotas = Configure::read('Obsi.shop.psc.quotas');
+              $this->loadModel('Obsi.PscQuotas');
+              $quotas = array();
+              $findQuotas = $this->PscQuotas->find('all');
+              foreach ($findQuotas as $quota) {
+                $pseudo = ($quota['PscQuotas']['user_id'] == 0) ? 'all' : $this->User->getFromUser('pseudo', $quota['PscQuotas']['user_id']);
+                $quotas[$pseudo] = $quota['PscQuotas']['quota'];
+              }
+
               foreach ($quotas as $user => $quota) {
 
                 if($this->User->getKey('pseudo') == $user) {
@@ -246,7 +254,15 @@ class PaysafecardController extends ObsiAppController {
       $this->layout = 'admin';
       $this->set('title_for_layout', 'Voir les quotas de PaySafeCard depuis '.date('Y-m-01 00:00:00'));
 
-      $quotas = Configure::read('Obsi.shop.psc.quotas');
+      //$quotas = Configure::read('Obsi.shop.psc.quotas');
+      $this->loadModel('Obsi.PscQuotas');
+      $quotas = array();
+      $findQuotas = $this->PscQuotas->find('all');
+      foreach ($findQuotas as $quota) {
+        $pseudo = ($quota['PscQuotas']['user_id'] == 0) ? 'all' : $this->User->getFromUser('pseudo', $quota['PscQuotas']['user_id']);
+        $quotas[$pseudo] = $quota['PscQuotas']['quota'];
+      }
+
       $usersToFind = array();
       $usersByID = array();
       $usersQuotas = array();
@@ -276,6 +292,95 @@ class PaysafecardController extends ObsiAppController {
 
     } else {
       throw new ForbiddenException();
+    }
+  }
+
+  public function admin_edit_quota() {
+    if($this->isConnected && $this->User->isAdmin()) {
+      $authorized_users = explode("\n", file_get_contents(ROOT.DS.'app'.DS.'Plugin'.DS.'Obsi'.DS.'Config'.DS.'authorized_users_quota.txt'));
+      if(in_array($this->User->getKey('pseudo'), $authorized_users)) {
+
+        $this->layout = 'admin';
+        $this->set('title_for_layout', 'Modifier les quotas de PaySafeCard');
+
+        $this->loadModel('Obsi.PscQuotas');
+
+        if($this->request->is('post')) {
+
+          if(
+            !isset($this->request->data['users'][0]) ||
+            empty($this->request->data['users'][0]) ||
+            !isset($this->request->data['users'][0]['pseudo']) ||
+            empty($this->request->data['users'][0]['pseudo']) ||
+            $this->request->data['users'][0]['pseudo'] != "all" ||
+            !isset($this->request->data['users'][0]['quota'])
+          ) {
+
+            $this->Session->setFlash('Vous ne pouvez pas ne pas configurer de quota global !', 'default.error');
+            return;
+
+          }
+
+          foreach ($this->request->data['users'] as $user) {
+
+            if(!empty($user['pseudo'])) {
+
+              if($user['pseudo'] == "all") {
+                $user_id = 0;
+              } else {
+                $user_id = $this->User->getFromUser('id', $user['pseudo']);
+              }
+
+              $find = $this->PscQuotas->find('first', array('conditions' => array('user_id' => $user_id)));
+              if(!empty($find)) {
+                $this->PscQuotas->read(null, $find['PscQuotas']['id']);
+              } else {
+                $this->PscQuotas->create();
+              }
+              $this->PscQuotas->set(array(
+                'user_id' => $user_id,
+                'updated_by' => $this->User->getKey('id'),
+                'quota' => $user['quota'],
+                'modified' => date('Y-m-d H:i:s')
+              ));
+              $this->PscQuotas->save();
+
+            }
+
+          }
+
+          $this->Session->setFlash('Les quotas ont bien été modifiés !', 'default.success');
+
+        }
+
+        $quotas = array();
+        $findQuotas = $this->PscQuotas->find('all');
+        foreach ($findQuotas as $quota) {
+          $pseudo = ($quota['PscQuotas']['user_id'] == 0) ? 'all' : $this->User->getFromUser('pseudo', $quota['PscQuotas']['user_id']);
+          $quotas[] = array(
+            'pseudo' => $pseudo,
+            'quota' => $quota['PscQuotas']['quota']
+          );
+        }
+
+        $this->set('quotas', $quotas);
+
+      } else {
+        throw new ForbiddenException();
+      }
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
+  public function admin_remove_quota($username) {
+    if($this->isConnected && $this->User->isAdmin()) {
+      $authorized_users = explode("\n", file_get_contents(ROOT.DS.'app'.DS.'Plugin'.DS.'Obsi'.DS.'Config'.DS.'authorized_users_quota.txt'));
+      if(in_array($this->User->getKey('pseudo'), $authorized_users)) {
+        $this->autoRender = false;
+        $this->loadModel('Obsi.PscQuotas');
+        $this->PscQuotas->deleteAll(array('user_id' => $this->User->getFromUser('id', $username)));
+      }
     }
   }
 

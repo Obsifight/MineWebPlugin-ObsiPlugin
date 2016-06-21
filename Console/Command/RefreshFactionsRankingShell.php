@@ -1,7 +1,7 @@
 <?php
 class RefreshFactionsRankingShell extends AppShell {
 
-	public $uses = array('Obsi.FactionsRanking', 'Obsi.ServerFactionsRanking', 'Obsi.TotemsWins'); //Models
+	public $uses = array('Obsi.FactionsRanking', 'Obsi.ServerFactionsRanking', 'Obsi.TotemsWins', 'Obsi.EndEventsWin'); //Models
 /*
   private $columnsToSave = array(
     'position',
@@ -100,7 +100,7 @@ class RefreshFactionsRankingShell extends AppShell {
         */
 
           $factionGoldsPieces = $this->__getGoldspiecesOf($players);
-          $factionEndEvents = $this->__getEndEventsOf($players);
+          $factionEndEvents = $this->__getEndEventsOf($factionName);
           $factionKingzombieEvents = $this->__getKingzombieEventsOf($players);
 					$factionWarsPoints = $this->__getWarsPoints($factionName);
 					$factionTotemsWins = $this->__getTotemsWins($factionName);
@@ -208,7 +208,7 @@ class RefreshFactionsRankingShell extends AppShell {
 			$Server = new ServerComponent($Collection);
 			$server_id = Configure::read('ObsiPlugin.server.pvp.id');
 
-			var_dump($Server->call(array('performCommand' => 'prefixreload'), true, $server_id));
+			$Server->call(array('performCommand' => 'prefixreload'), true, $server_id);
 
   	$this->out('['.round((microtime(true) - $startTime), 2).' sec] Done.');
   }
@@ -297,6 +297,12 @@ class RefreshFactionsRankingShell extends AppShell {
 
       }
 
+		/*
+			En fonction des events end
+		*/
+
+			
+
     return array($points, $factionPointsDetails);
 
   }
@@ -371,29 +377,12 @@ class RefreshFactionsRankingShell extends AppShell {
 
 
   /*
-    Récupère les events end d'un joueur ou d'une liste de joueurs TODO
+    Récupère les events end d'un joueur ou d'une liste de joueurs
   */
 
-  private function __getEndEventsOf($users) {
+  private function __getEndEventsOf($faction_name) {
 
-    return 0; // TODO
-
-    $endEvents = 0;
-
-    if(is_array($users)) {
-      foreach ($users as $username) {
-        # code...
-      }
-
-      foreach ($request as $result) {
-        $endEvents += 0;
-      }
-    } else {
-
-      $endEvents = 0;
-    }
-
-    return $endEvents;
+    return $this->EndEventsWin->find('count', array('conditions' => array('faction_name' => $faction_name)));;
 
   }
 
