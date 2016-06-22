@@ -32,6 +32,16 @@
             echo '<div class="alert alert-danger">Le joueur n\'a pas autorisé d\'IPs !</div>';
           }
 
+          echo '<form action="'.Router::url(array('controller' => 'user', 'action' => 'addIPObsiguard', 'plugin' => 'obsi', 'admin' => true, $search_user['id'])).'" method="post" class="form-inline">';
+            echo '<div class="form-group">';
+              echo '<input class="form-control" name="ip" type="text" placeholder="IP">';
+            echo '</div>';
+            echo '<div class="form-group">';
+              echo '<button class="btn btn-success" type="submit">Ajouter</button>';
+            echo '</div>';
+            echo '<input type="hidden" name="data[_Token][key]" value="'.$csrfToken.'">';
+          echo '</form>';
+
           echo '<br>';
 
           if($obsiguardDynamicIPStatus) {
@@ -50,6 +60,7 @@
 
         } else {
           echo '<div class="alert alert-danger">Le joueur n\'a pas activé ObsiGuard !</div>';
+          echo '<a class="btn btn-success btn-block" href="'.Router::url(array('controller' => 'user', 'action' => 'enableObsiguard', 'plugin' => 'obsi', 'admin' => true, $search_user['id'])).'">Activer ObsiGuard</a>';
         }
         ?>
 

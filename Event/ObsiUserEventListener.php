@@ -63,6 +63,10 @@ class ObsiUserEventListener implements CakeEventListener {
 
         $user_id = $this->controller->request->params['pass'][0];
         $findUser = $this->controller->User->find('first', array('conditions' => array('id' => $user_id)));
+        if(empty($findUser)) {
+          $findUser = $this->controller->User->find('first', array('conditions' => array('pseudo' => $user_id)));
+          $user_id = $findUser['User']['id'];
+        }
         $user = $findUser['User'];
 
         $obsiguardStatus = ($user['obsi-obsiguard_enabled']);
