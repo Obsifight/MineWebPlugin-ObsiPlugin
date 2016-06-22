@@ -630,9 +630,44 @@ class UserController extends ObsiAppController {
         $this->loadModel('Obsi.EmailUpdateRequest');
         $requests = $this->EmailUpdateRequest->find('all');
 
+        $this->loadModel('Obsi.ConnectionLog');
+
         $usersToFind = array();
         foreach ($requests as $key => $value) {
           $usersToFind[] = $value['EmailUpdateRequest']['user_id'];
+
+          if(empty($value['EmailUpdateRequest']['ip'])) {
+            $requests[$key]['EmailUpdateRequest']['ip'] = 'N/A';
+            $requests[$key]['EmailUpdateRequest']['ip_valid'] = '<a href="'.Router::url(array('controller' => 'user', 'action' => 'edit', 'admin' => true, 'plugin' => false, $value['EmailUpdateRequest']['user_id'])).'">A vérifier</a>';
+            continue;
+          }
+
+          $findWebConnectionLogs = $this->ConnectionLog->find('all', array('fields' => 'COUNT(*) AS count,ip', 'group' => 'ip', 'limit' => '20', 'order' => 'id desc', 'conditions' => array('user_id' => $value['EmailUpdateRequest']['user_id'])));
+          $webConnectionLogs = array();
+          $countTotal = 0;
+          foreach ($findWebConnectionLogs as $connection) {
+            $countTotal += $connection[0]['count'];
+            $webConnectionLogs[$connection['ConnectionLog']['ip']] = $connection[0]['count'];
+          }
+          $percentage = $webConnectionLogs[$value['EmailUpdateRequest']['ip']] * 100 / $countTotal;
+
+          unset($countTotal);
+          unset($findWebConnectionLogs);
+          unset($webConnectionLogs);
+
+          if($percentage > 25) {
+            unset($percentage);
+            $requests[$key]['EmailUpdateRequest']['ip_valid'] = '<span class="label label-success">Oui</span>';
+            continue;
+          } elseif($percentage < 5) {
+            unset($percentage);
+            $requests[$key]['EmailUpdateRequest']['ip_valid'] = '<span class="label label-danger">Non</span>';
+            continue;
+          }
+
+          unset($percentage);
+
+          $requests[$key]['EmailUpdateRequest']['ip_valid'] = '<a href="'.Router::url(array('controller' => 'user', 'action' => 'edit', 'admin' => true, 'plugin' => false, $value['EmailUpdateRequest']['user_id'])).'">A vérifier</a>';
         }
 
         $usersByID = array();

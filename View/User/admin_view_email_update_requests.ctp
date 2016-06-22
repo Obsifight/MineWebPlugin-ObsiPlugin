@@ -22,6 +22,8 @@ table tr td:last-child > div.btn-group {
                 <th>Utilisateur</th>
                 <th>Nouvel email</th>
                 <th>Raison</th>
+                <th>IP utilisée</th>
+                <th><abbr title="Quand une IP est utilisé plusieurs fois (+25% des 20 dernières connexions)">IP jugée valide</abbr></th>
                 <th><?= $Lang->get('GLOBAL__CREATED') ?></th>
                 <th>Actions</th>
               </tr>
@@ -33,6 +35,8 @@ table tr td:last-child > div.btn-group {
                     <td><?= (isset($usersByID[$value['EmailUpdateRequest']['user_id']])) ? $usersByID[$value['EmailUpdateRequest']['user_id']] : $value['EmailUpdateRequest']['user_id'] ?></td>
                     <td><?= $value['EmailUpdateRequest']['new_email'] ?></td>
                     <td><?= $value['EmailUpdateRequest']['reason'] ?></td>
+                    <td><?= $value['EmailUpdateRequest']['ip'] ?></td>
+                    <td><?= $value['EmailUpdateRequest']['ip_valid'] ?></td>
                     <td><?= $Lang->date($value['EmailUpdateRequest']['created']) ?></td>
                     <td>
                       <div class="btn-group" role="group">
