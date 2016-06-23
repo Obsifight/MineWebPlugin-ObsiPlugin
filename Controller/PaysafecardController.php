@@ -46,6 +46,22 @@ class PaysafecardController extends ObsiAppController {
     }
   }
 
+  public function admin_unbanUser($id) {
+    $this->autoRender = false;
+    if($this->isConnected && $this->User->isAdmin()) {
+
+      $this->loadModel('Obsi.PscBan');
+      $this->PscBan->delete($id);
+
+      $this->Session->setFlash('Vous avez bien débanni cet utilisateur du moyen de paiement PaySafeCard !', 'default.success');
+
+      $this->redirect(array('controller' => 'payment', 'action' => 'index', 'plugin' => 'shop', 'admin' => true));
+
+    } else {
+      throw new ForbiddenException();
+    }
+  }
+
   public function admin_take() {
     $this->autoRender = false;
     $this->response->type('json');

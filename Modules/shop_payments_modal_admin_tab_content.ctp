@@ -159,5 +159,38 @@
     </tbody>
   </table>
 
+  <hr>
+
+  <h3>Liste des bannis de PaySafeCard</h3>
+
+  <table class="table table-bordered dataTable">
+    <thead>
+      <tr>
+        <th><?= $Lang->get('USER__USERNAME') ?></th>
+        <th>Banni par</th>
+        <th><?= $Lang->get('GLOBAL__CREATED') ?></th>
+        <th class="right"><?= $Lang->get('GLOBAL__ACTIONS') ?></th>
+      </tr>
+    </thead>
+    <style media="screen">
+      table tr td:last-child > div.btn-group {
+        width: 220px;
+      }
+    </style>
+    <tbody>
+      <?php if(isset($findPscBans)) { ?>
+        <?php foreach ($findPscBans as $ban) { ?>
+          <tr>
+            <td><?= $ban['PscBan']['user_pseudo'] ?></td>
+            <td><?= $ban['PscBan']['author_pseudo'] ?></td>
+            <td><?= $Lang->date($ban['PscBan']['created']) ?></td>
+            <td>
+              <a class="btn btn-success" href="<?= $this->Html->url(array('admin' => true, 'plugin' => 'obsi', 'controller' => 'paysafecard', 'action' => 'unbanUser', $ban['PscBan']['id'])) ?>">Débannir</a>
+            </td>
+          </tr>
+        <?php } ?>
+      <?php } ?>
+    </tbody>
+  </table>
 
 </div>

@@ -590,7 +590,8 @@ class UserController extends ObsiAppController {
                       $this->EmailUpdateRequest->set(array(
                         'user_id' => $this->User->getKey('id'),
                         'new_email' => $this->request->data['newEmail'],
-                        'reason' => $this->request->data['reason']
+                        'reason' => $this->request->data['reason'],
+                        'ip' => $this->Util->getIP()
                       ));
                       $this->EmailUpdateRequest->save();
 

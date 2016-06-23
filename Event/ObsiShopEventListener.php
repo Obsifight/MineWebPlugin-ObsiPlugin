@@ -31,6 +31,16 @@ class ObsiShopEventListener implements CakeEventListener {
 
     ModuleComponent::$vars['pscTaked'] = $pscTaked;
 
+    $pscBanModel = ClassRegistry::init('Obsi.PscBan');
+    $findPscBans = $pscBanModel->find('all');
+
+    foreach ($findPscBans as $key => $value) {
+      $findPscBans[$key]['PscBan']['user_pseudo'] = $this->controller->User->getKey('pseudo', $value['PscBan']['user_id']);
+      $findPscBans[$key]['PscBan']['author_pseudo'] = $this->controller->User->getKey('pseudo', $value['PscBan']['author_id']);
+    }
+
+    ModuleComponent::$vars['findPscBans'] = $findPscBans;
+
   }
 
   public function checkIfPaysafecardBan($event) {
