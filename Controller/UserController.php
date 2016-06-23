@@ -643,13 +643,26 @@ class UserController extends ObsiAppController {
             continue;
           }
 
-          $findWebConnectionLogs = $this->ConnectionLog->find('all', array('fields' => 'COUNT(*) AS count,ip', 'group' => 'ip', 'limit' => '20', 'order' => 'id desc', 'conditions' => array('user_id' => $value['EmailUpdateRequest']['user_id'])));
+          /*$findWebConnectionLogs = $this->ConnectionLog->find('all', array('fields' => 'COUNT(*) AS count,ip', 'group' => 'ip', 'limit' => '20', 'order' => 'id desc', 'conditions' => array('user_id' => $value['EmailUpdateRequest']['user_id'])));
           $webConnectionLogs = array();
           $countTotal = 0;
           foreach ($findWebConnectionLogs as $connection) {
             $countTotal += $connection[0]['count'];
             $webConnectionLogs[$connection['ConnectionLog']['ip']] = $connection[0]['count'];
+          }*/
+
+          $findWebConnectionLogs = $this->ConnectionLog->find('all', array('fields' => 'ip', 'limit' => '20', 'order' => 'id desc', 'conditions' => array('user_id' => $value['EmailUpdateRequest']['user_id'])));
+          $webConnectionLogs = array();
+          $countTotal = 0;
+          foreach ($findWebConnectionLogs as $connection) {
+            $countTotal++;
+            if(isset($webConnectionLogs[$connection['ConnectionLog']['ip']])) {
+              $webConnectionLogs[$connection['ConnectionLog']['ip']]++;
+            } else {
+              $webConnectionLogs[$connection['ConnectionLog']['ip']] = 1;
+            }
           }
+
           $percentage = $webConnectionLogs[$value['EmailUpdateRequest']['ip']] * 100 / $countTotal;
 
           unset($countTotal);
