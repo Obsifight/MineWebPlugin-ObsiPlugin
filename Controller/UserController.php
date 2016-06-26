@@ -830,7 +830,7 @@ class UserController extends ObsiAppController {
             if($password == $this->User->getKey('password')) {
 
               // On vérifie qu'il est valide
-              if(preg_match('`^([a-zA-Z0-9-_]{2,16})$`', $this->request->data['pseudo'])) {
+              if(preg_match('^([a-zA-Z0-9_]{2,16})$', $this->request->data['pseudo'])) {
 
                 // On vérifie si il est pas déjà pris
                   $find = $this->User->find('first', array('conditions' => array('pseudo' => $this->request->data['pseudo'])));
