@@ -117,7 +117,7 @@ class FactionsRankingController extends ObsiAppController {
 
         */
 
-          $result[$i]['golds_pieces'] = $result[$i]['kingzombie_events'] = $result[$i]['factions_war'] = '<span class="label label-warning">Bientôt disponible</span>';
+          $result[$i]['kingzombie_events'] = $result[$i]['factions_war'] = '<span class="label label-warning">Bientôt disponible</span>';
 
 
         unset($result[$i]['id']);

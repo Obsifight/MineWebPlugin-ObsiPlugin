@@ -99,7 +99,7 @@ class RefreshFactionsRankingShell extends AppShell {
           On récupère les évents et les golds de la faction
         */
 
-          $factionGoldsPieces = $this->__getGoldspiecesOf($players);
+          $factionGoldsPieces = $this->__getGoldspiecesOf($factionName);
           $factionEndEvents = $this->__getEndEventsOf($factionName);
           $factionKingzombieEvents = $this->__getKingzombieEventsOf($players);
 					$factionWarsPoints = $this->__getWarsPoints($factionName);
@@ -301,7 +301,7 @@ class RefreshFactionsRankingShell extends AppShell {
 			En fonction des events end
 		*/
 
-			
+
 
     return array($points, $factionPointsDetails);
 
@@ -352,26 +352,21 @@ class RefreshFactionsRankingShell extends AppShell {
     Récupère les events end d'un joueur ou d'une liste de joueurs
   */
 
-  private function __getGoldspiecesOf($users) {
+  private function __getGoldspiecesOf($factionName) {
 
-    return 0; // TODO
+		$goldsPieces = 0;
 
-    $goldpieces = 0;
+    App::uses('ConnectionManager', 'Model');
+    $con = new ConnectionManager;
+    ConnectionManager::create('GoldPieces', Configure::read('Obsi.db.GoldPieces'));
+    $db = $con->getDataSource('GoldPieces');
 
-    if(is_array($users)) {
-      foreach ($users as $username) {
-        # code...
-      }
+		$findGoldPieces = $db->fetchAll("SELECT * FROM faction_golds WHERE faction_name='$factionName'", array());
+		if(!empty($findGoldPieces)) {
+			$goldsPieces = $findGoldPieces[0]['faction_golds']['golds'];
+		}
 
-      foreach ($request as $result) {
-        $goldpieces += 0;
-      }
-    } else {
-
-      $goldpieces = 0;
-    }
-
-    return $goldpieces;
+    return $goldsPieces;
 
   }
 
