@@ -13,6 +13,11 @@
   		"url": "/admin/obsi/paysafecard/viewQuota"
   	},
 		{
+			"name": "Modifier les quotas de <br>PaySafeCard",
+			"icon": "pencil",
+			"url": "/admin/obsi/paysafecard/edit_quota"
+		},
+		{
   		"name": "Demande de changement <br>d'emails",
   		"icon": "envelope",
   		"url": "/admin/obsi/user/viewEmailUpdateRequests"
@@ -26,16 +31,6 @@
   		"name": "Système de lots",
   		"icon": "inbox",
   		"url": "/admin/obsi/prize/"
-  	},
-		{
-  		"name": "Voir les quotas de <br>PaySafeCard",
-  		"icon": "credit-card",
-  		"url": "/admin/obsi/paysafecard/viewQuota"
-  	},
-		{
-  		"name": "Modifier les quotas de <br>PaySafeCard",
-  		"icon": "pencil",
-  		"url": "/admin/obsi/paysafecard/edit_quota"
   	},
 		{
   		"name": "Ajouter une victoire <br>d'un event End",

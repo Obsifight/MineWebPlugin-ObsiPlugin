@@ -50,7 +50,7 @@ class ObsiGlobalsEventListener implements CakeEventListener {
       'Le TP-Kill est autorisé, mais pas les demandes de tp dans le chat.',
       'Ce message a été écrit par Isotheis.',
       'Les joueurs sont capables de réfléchir seuls.',
-      'dem0niak joue sur un compte joueur actuellement, le nom reste secret.',
+      //'dem0niak joue sur un compte joueur actuellement, le nom reste secret.',
       'Le serveur Obsifight possède un Twitter et un Facebook.',
       'Au départ, il y avait 3 fondateurs: antoinewin, dem0niak et Suertzz.',
       'L\'usebug bateau a toujours été interdit.',
