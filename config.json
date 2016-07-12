@@ -3,8 +3,51 @@
 	"slug":"obsi",
 	"nav":false,
 	"admin":true,
-	"admin_route":"/admin/obsi",
-  "admin_name":"Emails/Lots/Quotas",
+	"admin_group_menu":"other",
+  "admin_name":"ObsiAdmin",
+  "admin_icon":"lock",
+  "admin_menus": [
+  	{
+  		"name": "Voir les quotas de <br>PaySafeCard",
+  		"icon": "credit-card",
+  		"url": "/admin/obsi/paysafecard/viewQuota"
+  	},
+		{
+  		"name": "Demande de changement <br>d'emails",
+  		"icon": "envelope",
+  		"url": "/admin/obsi/user/viewEmailUpdateRequests"
+  	},
+		{
+  		"name": "Historique de changement <br>de pseudo",
+  		"icon": "user-secret",
+  		"url": "/admin/obsi/user/viewPseudoUpdates"
+  	},
+		{
+  		"name": "Système de lots",
+  		"icon": "inbox",
+  		"url": "/admin/obsi/prize/"
+  	},
+		{
+  		"name": "Voir les quotas de <br>PaySafeCard",
+  		"icon": "credit-card",
+  		"url": "/admin/obsi/paysafecard/viewQuota"
+  	},
+		{
+  		"name": "Modifier les quotas de <br>PaySafeCard",
+  		"icon": "pencil",
+  		"url": "/admin/obsi/paysafecard/edit_quota"
+  	},
+		{
+  		"name": "Ajouter une victoire <br>d'un event End",
+  		"icon": "plus",
+  		"url": "/admin/obsi/paysafecard/add_events_end_win"
+  	},
+		{
+  		"name": "Remboursement",
+  		"icon": "money",
+  		"url": "/admin/obsi/refund/index/"
+  	}
+  ],
 	"author":"Eywek",
 	"version":"0.1.0",
 	"apiID":-1,

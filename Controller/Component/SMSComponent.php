@@ -31,7 +31,7 @@ class SMSComponent extends Object {
 
 		$object = new SimpleXMLElement($return);
 		if(class_exists('SimpleXMLElement') && is_object($object)) {
-			$statut = self::checkStatut($object);
+			$statut = self::checkStatus($object);
 			return ($statut === true) ? $object : $statut;
 		} else {
 			return array('statut' => 'error', 'code' => '1', 'message' => 'Class SimpleXMLElement doesn\'t exist or return bad value.', 'data' => '');
@@ -52,7 +52,7 @@ class SMSComponent extends Object {
 		return $url;
 	}
 
-	private static function checkStatut($object) {
+	private static function checkStatus($object) {
 		switch ($object->error_code) {
 			case 000:
 				return true;

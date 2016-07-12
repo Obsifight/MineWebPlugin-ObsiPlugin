@@ -132,7 +132,7 @@
 
   <h3><?= $Lang->get('SHOP__PAYSAFECARD_HISTORIES') ?></h3>
 
-  <table class="table table-bordered dataTable">
+  <table class="table table-bordered dataTable" id="histories_paysafecard_obsi">
     <thead>
       <tr>
         <th><?= $Lang->get('SHOP__PAYSAFECARD_CODE') ?></th>
@@ -144,21 +144,32 @@
       </tr>
     </thead>
     <tbody>
-      <?php if(isset($histories['paysafecard'])) { ?>
-        <?php foreach ($histories['paysafecard'] as $key => $value) { ?>
-          <tr>
-            <td><?= $value['PaysafecardHistory']['code'] ?></td>
-            <td><?= (isset($usersByID[$value['PaysafecardHistory']['user_id']])) ? $usersByID[$value['PaysafecardHistory']['user_id']] : $value['PaysafecardHistory']['user_id'] ?></td>
-            <td><?= (isset($usersByID[$value['PaysafecardHistory']['author_id']])) ? $usersByID[$value['PaysafecardHistory']['author_id']] : $value['PaysafecardHistory']['author_id'] ?></td>
-            <td><?= $value['PaysafecardHistory']['amount'] ?></td>
-            <td><?= $value['PaysafecardHistory']['credits_gived'] ?></td>
-            <td><?= $Lang->date($value['PaysafecardHistory']['created']) ?></td>
-          </tr>
-        <?php } ?>
-      <?php } ?>
     </tbody>
   </table>
-
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#histories_paysafecard_obsi').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": false,
+      "info": false,
+      "autoWidth": false,
+      'searching': true,
+      "bProcessing": true,
+      "bServerSide": true,
+      "sAjaxSource": "<?= $this->Html->url(array('action' => 'get_paysafecard_histories')) ?>",
+      "aoColumns": [
+          {mData:"PaysafecardHistory.code"},
+          {mData:"User.pseudo"},
+          {mData:"Author.pseudo"},
+          {mData:"PaysafecardHistory.amount"},
+          {mData:"PaysafecardHistory.credits_gived"},
+          {mData:"PaysafecardHistory.created"}
+      ],
+    });
+  });
+  </script>
   <hr>
 
   <h3>Liste des bannis de PaySafeCard</h3>

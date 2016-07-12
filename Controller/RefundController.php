@@ -172,8 +172,8 @@ class RefundController extends ObsiAppController {
         ));
 
 
-      } else {
-        throw new NotFoundException();
+      } elseif($user_pseudo != null) {
+        $this->set('error', true);
       }
 
     } else {
