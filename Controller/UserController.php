@@ -411,6 +411,7 @@ class UserController extends ObsiAppController {
 
   				if(!empty($this->request->data['to']) && !empty($this->request->data['howMany']) && !empty($this->request->data['password'])) {
 
+            $this->request->data['to'] = trim($this->request->data['to']);
             if(strtolower($this->request->data['to']) != strtolower($this->User->getKey('pseudo')) && intval($this->request->data['to']) != $this->User->getKey('id')) {
 
               $password = $this->Util->password($this->request->data['password'], $this->User->getKey('pseudo'));
