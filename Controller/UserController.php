@@ -439,11 +439,22 @@ class UserController extends ObsiAppController {
                         $confirmed = $this->User->getKey('confirmed');
                         if(empty($confirmed) || date('Y-m-d H:i:s', strtotime($confirmed)) == $confirmed) {
 
+                          $to = $this->User->getFromUser('id', $this->request->data['to']);
+
           								$this->User->setKey('money', $money_user);
-          								$to_money = $this->User->getFromUser('money', $this->request->data['to']) + $how;
+          								$to_money = $this->User->getFromUser('money', $to) + $how;
           								$this->User->setToUser('money', $to_money, $this->request->data['to']);
 
-          								$this->History->set('SEND_MONEY', 'shop', $this->request->data['to'].'|'.$how);
+                          $this->loadModel('Shop.PointsTransferHistory');
+                          $this->PointsTransferHistory->create();
+                          $this->PointsTransferHistory->set(array(
+                            'user_id' => $to,
+                            'points' => $how,
+                            'author_id' => $this->User->getKey('id')
+                          ));
+                          $this->PointsTransferHistory->save();
+                          $this->History->set('SEND_MONEY', 'shop', $to.'|'.$how);
+
           								echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $money_user));
 
                         } else {
