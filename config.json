@@ -7,16 +7,6 @@
   "admin_name":"ObsiAdmin",
   "admin_icon":"lock",
   "admin_menus": [
-  	{
-  		"name": "Voir les quotas de <br>PaySafeCard",
-  		"icon": "credit-card",
-  		"url": "/admin/obsi/paysafecard/viewQuota"
-  	},
-		{
-			"name": "Modifier les quotas de <br>PaySafeCard",
-			"icon": "pencil",
-			"url": "/admin/obsi/paysafecard/edit_quota"
-		},
 		{
   		"name": "Demande de changement <br>d'emails",
   		"icon": "envelope",
@@ -48,10 +38,10 @@
 	"apiID":-1,
 	"useEvents":true,
 	"permissions" : {
-		"available" : ["CREATE_TEAMSPEAK_CHANNEL", "CAN_TAKE_PSC"],
+		"available" : [],
 		"default" : {
-			"0": ["CREATE_TEAMSPEAK_CHANNEL", "CAN_TAKE_PSC"],
-			"2": ["CREATE_TEAMSPEAK_CHANNEL", "CAN_TAKE_PSC"]
+			"0": [],
+			"2": []
 		}
 	},
 	"requirements" : {

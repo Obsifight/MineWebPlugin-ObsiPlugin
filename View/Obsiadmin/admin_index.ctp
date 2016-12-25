@@ -7,14 +7,11 @@
         </div>
         <div class="box-body">
 
-          <a href="<?= $this->Html->url(array('controller' => 'paysafecard', 'action' => 'viewQuota', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-success">Accèder aux quotas de PaySafeCards</a>
           <a href="<?= $this->Html->url(array('controller' => 'user', 'action' => 'viewEmailUpdateRequests', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-success">Accèder aux demandes de changements d'email</a>
           <a href="<?= $this->Html->url(array('controller' => 'prize', 'action' => 'index', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-success">Accèder au système de lots</a>
           <a href="<?= $this->Html->url(array('controller' => 'user', 'action' => 'viewPseudoUpdates', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-success">Accèder à l'historique de changements de pseudo</a>
 
           <a href="<?= $this->Html->url(array('controller' => 'FactionsRanking', 'action' => 'add_events_end_win', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-info">Ajouter une victoire pour un event End</a>
-
-          <a href="<?= $this->Html->url(array('controller' => 'paysafecard', 'action' => 'edit_quota', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-danger">Modifier les quotas de PaySafeCard</a>
 
         </div>
       </div>
