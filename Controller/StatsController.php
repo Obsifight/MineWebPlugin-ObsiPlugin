@@ -58,12 +58,35 @@ class StatsController extends ObsiAppController {
   /*
     Stats globals
   */
-    $usersRegistered = $this->User->find('count');
+
+    $cache = Cache::read('registered_count', 'data');
+    if (!$cache) {
+      $usersRegistered = $this->User->find('count');
+      Cache::write('registered_count', $usersRegistered, 'data');
+    } else {
+      $usersRegistered = $cache;
+    }
+
+  /*
+    Max players
+  */
+    $cache = Cache::read('maxPlayers', 'data');
+    if (!$cache) {
+      $this->CountPlayersLog = ClassRegistry::init('Obsi.CountPlayersLog');
+      $findMaxplayers = $this->CountPlayersLog->find('first', array('order' => 'players_online DESC'));
+      $maxPlayers = (isset($findMaxplayers['CountPlayersLog']['players_online'])) ? $findMaxplayers['CountPlayersLog']['players_online'] : 0;
+      Cache::write('maxPlayers', $maxPlayers, 'data');
+    } else {
+      $maxPlayers = $cache;
+    }
+    $this->set('maxPlayers', $maxPlayers);
 
   /*
     Connectés
   */
 
+  $cache = Cache::read('stats-onlinePlayers', 'data');
+  if (!$cache) {
     $this->loadModel('Obsi.CountPlayersLog');
     $findOnlinePlayers = $this->CountPlayersLog->find('all', array('conditions' => array('time >= ' => strtotime('-7 days'))));
     $onlinePlayers = array();
@@ -77,9 +100,14 @@ class StatsController extends ObsiAppController {
 
       }
     }
-
     $onlinePlayers = json_encode($onlinePlayers);
+    Cache::write('stats-onlinePlayers', $onlinePlayers, 'data');
+  } else {
+    $onlinePlayers = Cache::read('stats-onlinePlayers', 'data');
+  }
 
+  $cache = Cache::read('stats-peakTimes', 'data');
+  if (!$cache) {
     $peakTimes = array();
 
     // On récupère les heures les plus fréquentées (max 5)
@@ -143,44 +171,52 @@ class StatsController extends ObsiAppController {
         $peakTimes['days'][$day] = round($value['average_players_online'], 0, PHP_ROUND_HALF_UP); // La moyenne de joueur pour cette heure là
 
       }
+      Cache::write('stats-peakTimes', $peakTimes, 'data');
+    } else {
+      $peakTimes = Cache::read('stats-peakTimes', 'data');
+    }
 
   /*
     Users
   */
 
-    // Graph
+  $cache = Cache::read('stats-users', 'data');
+  if (!$cache) {
+    $registersUsers['today'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d'))));
+    $registersUsers['yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-1 days')))));
+    $registersUsers['before_yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-2 days')))));
+    $registersUsers['three_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-3 days')))));
+    $registersUsers['four_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-4 days')))));
+    $registersUsers['five_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-5 days')))));
+    $registersUsers['six_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-6 days')))));
+    $registersUsers['seven_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-7 days')))));
 
-      $registersUsers['today'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d'))));
-      $registersUsers['yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-1 days')))));
-      $registersUsers['before_yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-2 days')))));
-      $registersUsers['three_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-3 days')))));
-      $registersUsers['four_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-4 days')))));
-      $registersUsers['five_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-5 days')))));
-      $registersUsers['six_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-6 days')))));
-      $registersUsers['seven_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-7 days')))));
+    App::uses('ConnectionManager', 'Model');
+    $con = new ConnectionManager;
+    ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+    $db = $con->getDataSource('Auth');
 
-
-    // Pourcentages
-      App::uses('ConnectionManager', 'Model');
-      $con = new ConnectionManager;
-      ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
-      $db = $con->getDataSource('Auth');
-
-      $registeredUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v5=1')[0][0]['COUNT(user_id)'];
-      $connectedUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v5=1')[0][0]['COUNT(user_id)'];
-      $registeredUsersThisWeek = $this->User->find('count', array(
-        'conditions' => array(
-          'AND' => array(
-            'created >=' => date('Y-m-d 00:00:00', strtotime('monday this week')),
-            'created <=' => date('Y-m-d 23:59:59', strtotime('sunday this week')),
-          )
+    $registeredUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v5=1')[0][0]['COUNT(user_id)'];
+    $connectedUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v5=1')[0][0]['COUNT(user_id)'];
+    $registeredUsersThisWeek = $this->User->find('count', array(
+      'conditions' => array(
+        'AND' => array(
+          'created >=' => date('Y-m-d 00:00:00', strtotime('monday this week')),
+          'created <=' => date('Y-m-d 23:59:59', strtotime('sunday this week')),
         )
-      ));
-      $totalUsers = $this->User->find('count');
+      )
+    ));
 
-      $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
-      $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
-      $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+    Cache::write('stats-users', array($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek), 'data');
+  } else {
+    list($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek) = Cache::read('stats-users', 'data');
+  }
+
+  $totalUsers = $usersRegistered;
+
+  $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+  $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+  $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
 
 
   /*
