@@ -16,7 +16,6 @@ class ObsiGlobalsEventListener implements CakeEventListener {
   }
 
   public function setVars() {
-
     if ($this->controller->params['controller'] == "pages" && $this->controller->params['action'] == "display") {
       // registered_count
       $cache = Cache::read('registered_count', 'data');

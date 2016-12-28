@@ -189,4 +189,9 @@ class ObsiAppSchema extends CakeSchema {
 		'obsi-can_update_pseudo' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false)
 	);
 
+  /*public $shop__paypal_histories = array(
+		'obsi-status' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 20, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'obsi-case_date' => array('type' => 'datetime', 'null' => true, 'default' => null)
+	);*/
+
 }

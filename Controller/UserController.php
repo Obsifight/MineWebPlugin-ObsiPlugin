@@ -431,13 +431,24 @@ class UserController extends ObsiAppController {
                         On vérifie qu'il est pas ban
                       */
                       $this->Sanctions = $this->Components->load('Obsi.Sanctions');
-                      if(!$this->Sanctions->isBanned($this->Sanctions->getUUID($this->User->getKey('pseudo')))) {
+                      if(!$this->Sanctions->isBanned($this->User->getKey('pseudo'), $this->Components->load('Obsi.Api'))) {
 
                         /*
                           On vérifie qu'il est son email confirmé
                         */
                         $confirmed = $this->User->getKey('confirmed');
                         if(empty($confirmed) || date('Y-m-d H:i:s', strtotime($confirmed)) == $confirmed) {
+
+                          // On vérifie qu'il ai pas un litige en cours ou fermé
+                          $this->loadModel('Shop.PaypalHistory');
+                          $findPayment = $this->PaypalHistory->find('first', array('conditions' => array(
+                            'user_id' => $this->User->getKey('id'),
+                            'obsi-status' => array('REVERSED', 'CANCELED_REVERSAL', 'REFUNDED')
+                          )));
+                          if (!empty($findPayment)) {
+                            echo json_encode(array('statut' => false, 'msg' => 'Votre compte est restreint, vous ne pouvez pas envoyer des points.'));
+                            return;
+                          }
 
                           $to = $this->User->getFromUser('id', $this->request->data['to']);
 
