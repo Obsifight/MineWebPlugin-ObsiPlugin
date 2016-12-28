@@ -31,6 +31,12 @@
   		"name": "Remboursement",
   		"icon": "money",
   		"url": "/admin/obsi/refund/index/"
+  	},
+    {
+  		"name": "Livre des recettes",
+  		"icon": "money",
+  		"url": "/admin/shop/income-book",
+      "permission": "GET_INCOMES_BOOK"
   	}
   ],
 	"author":"Eywek",
