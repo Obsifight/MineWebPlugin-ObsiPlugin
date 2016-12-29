@@ -44,25 +44,29 @@ class StatsController extends ObsiAppController {
     /*
       Staff
     */
-      $staff = Configure::read('ObsiPlugin.staff');
-      $server_id = Configure::read('ObsiPlugin.server.pvp.id');
+    $staff = Configure::read('ObsiPlugin.staff');
+    $server_id = Configure::read('ObsiPlugin.server.pvp.id');
 
-      $usersOnlines = array();
+    $usersOnlines = array();
+    $cache = Cache::read('usersOnlines', 'short');
+    if (!$cache) {
       $serverpvp = $this->Server->call('getPlayerList', false, $server_id);
       if(isset($serverpvp['getPlayerList'])) {
         $usersOnlines = explode(', ', $serverpvp['getPlayerList']);
-      } else {
-        $usersOnlines = array();
+        Cache::write('usersOnlines', $usersOnlines, 'short');
       }
+    } else {
+      $usersOnlines = Cache::read('usersOnlines', 'short');
+    }
 
   /*
     Stats globals
   */
 
-    $cache = Cache::read('registered_count', 'data');
+    $cache = Cache::read('registered_count', 'data-short');
     if (!$cache) {
       $usersRegistered = $this->User->find('count');
-      Cache::write('registered_count', $usersRegistered, 'data');
+      Cache::write('registered_count', $usersRegistered, 'data-short');
     } else {
       $usersRegistered = $cache;
     }
@@ -70,12 +74,15 @@ class StatsController extends ObsiAppController {
   /*
     Max players
   */
-    $cache = Cache::read('maxPlayers', 'data');
+    $cache = Cache::read('maxPlayers', 'data-short');
     if (!$cache) {
-      $this->CountPlayersLog = ClassRegistry::init('Obsi.CountPlayersLog');
-      $findMaxplayers = $this->CountPlayersLog->find('first', array('order' => 'players_online DESC'));
-      $maxPlayers = (isset($findMaxplayers['CountPlayersLog']['players_online'])) ? $findMaxplayers['CountPlayersLog']['players_online'] : 0;
-      Cache::write('maxPlayers', $maxPlayers, 'data');
+      $query = @json_decode(@file_get_contents('http://players.api.obsifight.net/max'));
+      if ($query) {
+        $maxPlayers = $query->max;
+        Cache::write('maxPlayers', $maxPlayers, 'data-short');
+      } else {
+        $maxPlayers = 0;
+      }
     } else {
       $maxPlayers = $cache;
     }
@@ -85,102 +92,44 @@ class StatsController extends ObsiAppController {
     Connectés
   */
 
-  $cache = Cache::read('stats-onlinePlayers', 'data');
+  $cache = Cache::read('stats-onlinePlayers', 'data-short');
   if (!$cache) {
-    $this->loadModel('Obsi.CountPlayersLog');
-    $findOnlinePlayers = $this->CountPlayersLog->find('all', array('conditions' => array('time >= ' => strtotime('-7 days'))));
+    $url = 'http://players.api.obsifight.net/data?superiorDate='.date('Y-m-d%20H:i:s', strtotime('-8 days'));
+    $findOnlinePlayers = @json_decode(@file_get_contents($url), true);
     $onlinePlayers = array();
-    if(!empty($findOnlinePlayers)) {
+    if ($findOnlinePlayers && !empty($findOnlinePlayers)) {
       foreach ($findOnlinePlayers as $key => $value) {
 
         $onlinePlayers[] = array(
-          (intval($value['CountPlayersLog']['time'])*1000),
-          intval($value['CountPlayersLog']['players_online'])
+          (intval($value['time'])),
+          intval($value['count'])
         );
 
       }
     }
     $onlinePlayers = json_encode($onlinePlayers);
-    Cache::write('stats-onlinePlayers', $onlinePlayers, 'data');
+    Cache::write('stats-onlinePlayers', $onlinePlayers, 'data-short');
   } else {
-    $onlinePlayers = Cache::read('stats-onlinePlayers', 'data');
+    $onlinePlayers = Cache::read('stats-onlinePlayers', 'data-short');
   }
 
-  $cache = Cache::read('stats-peakTimes', 'data');
+  $this->loadModel('Obsi.CountPlayersLog');
+  $cache = Cache::read('stats-peakTimes', 'data-short');
   if (!$cache) {
-    $peakTimes = array();
-
-    // On récupère les heures les plus fréquentées (max 5)
-      $findPeakTimes['hours'] = $this->CountPlayersLog->query(
-        'SELECT HOUR(created) AS `hour`, AVG(players_online) AS `average_players_online`
-        FROM obsi__count_players_logs
-        GROUP BY hour(created)
-        ORDER BY AVG(players_online) DESC
-        LIMIT 5');
-
-    // On les parcours, pour récupérer la moyenne de joueurs
-      foreach ($findPeakTimes['hours'] as $key => $value) {
-
-        $value = $value[0];
-        $peakTimes['hours'][$value['hour']] = round($value['average_players_online'], 0, PHP_ROUND_HALF_UP); // La moyenne de joueur pour cette heure là
-
-      }
-
-    // On récupère les heures les plus fréquentées (max 5)
-      $findPeakTimes['days'] = $this->CountPlayersLog->query(
-        'SELECT created, AVG(players_online) AS `average_players_online`, WEEKDAY(created) AS `day`
-        FROM obsi__count_players_logs
-        GROUP BY WEEKDAY(created)
-        ORDER BY AVG(players_online) DESC
-        LIMIT 3');
-
-    // On les parcours, pour récupérer la moyenne de joueurs
-
-      foreach ($findPeakTimes['days'] as $key => $value) {
-
-        $day = date('w', strtotime($value['obsi__count_players_logs']['created']));
-
-        switch ($day) { // On converti en français
-          case 0:
-            $day = 'Dimanche';
-            break;
-          case 1:
-            $day = 'Lundi';
-            break;
-          case 2:
-            $day = 'Mardi';
-            break;
-          case 3:
-            $day = 'Mercredi';
-            break;
-          case 4:
-            $day = 'Jeudi';
-            break;
-          case 5:
-            $day = 'Vendredi';
-            break;
-          case 6:
-            $day = 'Samedi';
-            break;
-
-          default:
-            break;
-        }
-
-        $value = $value[0];
-        $peakTimes['days'][$day] = round($value['average_players_online'], 0, PHP_ROUND_HALF_UP); // La moyenne de joueur pour cette heure là
-
-      }
-      Cache::write('stats-peakTimes', $peakTimes, 'data');
-    } else {
-      $peakTimes = Cache::read('stats-peakTimes', 'data');
-    }
+    $peakTimes = array(
+      'hours' => @json_decode(@file_get_contents('http://players.api.obsifight.net/stats/peak-times/hours'), true),
+      'days' => @json_decode(@file_get_contents('http://players.api.obsifight.net/stats/peak-times/days'), true)
+    );
+    Cache::write('stats-peakTimes', $peakTimes, 'data-short');
+  } else {
+    $peakTimes = Cache::read('stats-peakTimes', 'data-short');
+  }
 
   /*
     Users
   */
 
-  $cache = Cache::read('stats-users', 'data');
+  $cache = Cache::read('stats-users', 'data-short');
   if (!$cache) {
     $registersUsers['today'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d'))));
     $registersUsers['yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-1 days')))));
@@ -207,9 +156,9 @@ class StatsController extends ObsiAppController {
       )
     ));
 
-    Cache::write('stats-users', array($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek), 'data');
+    Cache::write('stats-users', array($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek), 'data-short');
   } else {
-    list($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek) = Cache::read('stats-users', 'data');
+    list($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek) = Cache::read('stats-users', 'data-short');
   }
 
   $totalUsers = $usersRegistered;

@@ -18,22 +18,22 @@ class ObsiGlobalsEventListener implements CakeEventListener {
   public function setVars() {
     if ($this->controller->params['controller'] == "pages" && $this->controller->params['action'] == "display") {
       // registered_count
-      $cache = Cache::read('registered_count', 'data');
+      $cache = Cache::read('registered_count', 'data-short');
       if (!$cache) {
         $registered_count = $this->controller->User->find('count');
-        Cache::write('registered_count', $registered_count, 'data');
+        Cache::write('registered_count', $registered_count, 'data-short');
       } else {
         $registered_count = $cache;
       }
       $this->controller->set('registered_count', $registered_count);
 
       // max players
-      $cache = Cache::read('maxPlayers', 'data');
+      $cache = Cache::read('maxPlayers', 'data-short');
       if (!$cache) {
         $this->CountPlayersLog = ClassRegistry::init('Obsi.CountPlayersLog');
         $findMaxplayers = $this->CountPlayersLog->find('first', array('order' => 'players_online DESC'));
         $maxPlayers = (isset($findMaxplayers['CountPlayersLog']['players_online'])) ? $findMaxplayers['CountPlayersLog']['players_online'] : 0;
-        Cache::write('maxPlayers', $maxPlayers, 'data');
+        Cache::write('maxPlayers', $maxPlayers, 'data-short');
       } else {
         $maxPlayers = $cache;
       }
@@ -45,7 +45,7 @@ class ObsiGlobalsEventListener implements CakeEventListener {
     }
 
     // did you know
-    $cache = Cache::read('didYouKnow', 'data');
+    $cache = Cache::read('didYouKnow', 'data-short');
     if (!$cache) {
       $this->didYouKnowModel = ClassRegistry::init('Obsi.DidYouKnow');
       $didYouKnow = array_map(function ($el) {
