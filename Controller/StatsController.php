@@ -59,9 +59,9 @@ class StatsController extends ObsiAppController {
       $usersOnlines = Cache::read('usersOnlines', 'short');
     }
 
-  /*
-    Stats globals
-  */
+    /*
+      Stats globals
+    */
 
     $cache = Cache::read('registered_count', 'data-short');
     if (!$cache) {
@@ -71,9 +71,9 @@ class StatsController extends ObsiAppController {
       $usersRegistered = $cache;
     }
 
-  /*
-    Max players
-  */
+    /*
+      Max players
+    */
     $cache = Cache::read('maxPlayers', 'data-short');
     if (!$cache) {
       $query = @json_decode(@file_get_contents('http://players.api.obsifight.net/max'));
@@ -88,89 +88,89 @@ class StatsController extends ObsiAppController {
     }
     $this->set('maxPlayers', $maxPlayers);
 
-  /*
-    Connectés
-  */
+    /*
+      Connectés
+    */
 
-  $cache = Cache::read('stats-onlinePlayers', 'data-short');
-  if (!$cache) {
-    $url = 'http://players.api.obsifight.net/data?superiorDate='.date('Y-m-d%20H:i:s', strtotime('-8 days'));
-    $findOnlinePlayers = @json_decode(@file_get_contents($url), true);
-    $onlinePlayers = array();
-    if ($findOnlinePlayers && !empty($findOnlinePlayers)) {
-      foreach ($findOnlinePlayers as $key => $value) {
+    $cache = Cache::read('stats-onlinePlayers', 'data-short');
+    if (!$cache) {
+      $url = 'http://players.api.obsifight.net/data?superiorDate='.date('Y-m-d%20H:i:s', strtotime('-8 days'));
+      $findOnlinePlayers = @json_decode(@file_get_contents($url), true);
+      $onlinePlayers = array();
+      if ($findOnlinePlayers && !empty($findOnlinePlayers)) {
+        foreach ($findOnlinePlayers as $key => $value) {
 
-        $onlinePlayers[] = array(
-          (intval($value['time'])),
-          intval($value['count'])
-        );
+          $onlinePlayers[] = array(
+            (intval($value['time'])),
+            intval($value['count'])
+          );
 
+        }
       }
+      $onlinePlayers = json_encode($onlinePlayers);
+      Cache::write('stats-onlinePlayers', $onlinePlayers, 'data-short');
+    } else {
+      $onlinePlayers = Cache::read('stats-onlinePlayers', 'data-short');
     }
-    $onlinePlayers = json_encode($onlinePlayers);
-    Cache::write('stats-onlinePlayers', $onlinePlayers, 'data-short');
-  } else {
-    $onlinePlayers = Cache::read('stats-onlinePlayers', 'data-short');
-  }
 
-  $this->loadModel('Obsi.CountPlayersLog');
-  $cache = Cache::read('stats-peakTimes', 'data-short');
-  if (!$cache) {
-    $peakTimes = array(
-      'hours' => @json_decode(@file_get_contents('http://players.api.obsifight.net/stats/peak-times/hours'), true),
-      'days' => @json_decode(@file_get_contents('http://players.api.obsifight.net/stats/peak-times/days'), true)
-    );
-    Cache::write('stats-peakTimes', $peakTimes, 'data-short');
-  } else {
-    $peakTimes = Cache::read('stats-peakTimes', 'data-short');
-  }
+    $this->loadModel('Obsi.CountPlayersLog');
+    $cache = Cache::read('stats-peakTimes', 'data-short');
+    if (!$cache) {
+      $peakTimes = array(
+        'hours' => @json_decode(@file_get_contents('http://players.api.obsifight.net/stats/peak-times/hours'), true),
+        'days' => @json_decode(@file_get_contents('http://players.api.obsifight.net/stats/peak-times/days'), true)
+      );
+      Cache::write('stats-peakTimes', $peakTimes, 'data-short');
+    } else {
+      $peakTimes = Cache::read('stats-peakTimes', 'data-short');
+    }
 
-  /*
-    Users
-  */
+    /*
+      Users
+    */
 
-  $cache = Cache::read('stats-users', 'data-short');
-  if (!$cache) {
-    $registersUsers['today'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d'))));
-    $registersUsers['yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-1 days')))));
-    $registersUsers['before_yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-2 days')))));
-    $registersUsers['three_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-3 days')))));
-    $registersUsers['four_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-4 days')))));
-    $registersUsers['five_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-5 days')))));
-    $registersUsers['six_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-6 days')))));
-    $registersUsers['seven_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-7 days')))));
+    $cache = Cache::read('stats-users', 'data-short');
+    if (!$cache) {
+      $registersUsers['today'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d'))));
+      $registersUsers['yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-1 days')))));
+      $registersUsers['before_yesterday'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-2 days')))));
+      $registersUsers['three_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-3 days')))));
+      $registersUsers['four_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-4 days')))));
+      $registersUsers['five_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-5 days')))));
+      $registersUsers['six_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-6 days')))));
+      $registersUsers['seven_days_before'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d', strtotime('-7 days')))));
 
-    App::uses('ConnectionManager', 'Model');
-    $con = new ConnectionManager;
-    ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
-    $db = $con->getDataSource('Auth');
+      App::uses('ConnectionManager', 'Model');
+      $con = new ConnectionManager;
+      ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
+      $db = $con->getDataSource('Auth');
 
-    $registeredUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v5=1')[0][0]['COUNT(user_id)'];
-    $connectedUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v5=1')[0][0]['COUNT(user_id)'];
-    $registeredUsersThisWeek = $this->User->find('count', array(
-      'conditions' => array(
-        'AND' => array(
-          'created >=' => date('Y-m-d 00:00:00', strtotime('monday this week')),
-          'created <=' => date('Y-m-d 23:59:59', strtotime('sunday this week')),
+      $registeredUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v5=1')[0][0]['COUNT(user_id)'];
+      $connectedUsersOnV5 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v5=1')[0][0]['COUNT(user_id)'];
+      $registeredUsersThisWeek = $this->User->find('count', array(
+        'conditions' => array(
+          'AND' => array(
+            'created >=' => date('Y-m-d 00:00:00', strtotime('monday this week')),
+            'created <=' => date('Y-m-d 23:59:59', strtotime('sunday this week')),
+          )
         )
-      )
-    ));
+      ));
 
-    Cache::write('stats-users', array($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek), 'data-short');
-  } else {
-    list($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek) = Cache::read('stats-users', 'data-short');
-  }
+      Cache::write('stats-users', array($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek), 'data-short');
+    } else {
+      list($registersUsers, $registeredUsersOnV5, $connectedUsersOnV5, $registeredUsersThisWeek) = Cache::read('stats-users', 'data-short');
+    }
 
-  $totalUsers = $usersRegistered;
+    $totalUsers = $usersRegistered;
 
-  $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
-  $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
-  $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+    $percentageRegisteredUsersOnV5 = round(( $registeredUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+    $percentageConnectedUsersOnV5 = round(( $connectedUsersOnV5 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+    $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
 
 
-  /*
-    Set vars to view
-  */
+    /*
+      Set vars to view
+    */
 
     $this->set('staff', $staff);
     $this->set(compact(
@@ -253,7 +253,7 @@ class StatsController extends ObsiAppController {
       /*
           On se connecte à LogBlock et on cherche le joueur
       */
-
+      /*
       App::uses('ConnectionManager', 'Model');
       $con = new ConnectionManager;
       ConnectionManager::create('LogBlock', Configure::read('Obsi.db.LogBlock'));
@@ -267,7 +267,7 @@ class StatsController extends ObsiAppController {
         /*
             Stats LogBlock
         */
-
+        /*
 
           // Temps de connexion & last connexion
             $lastLogin = 'Il y a '.$this->timeAgo(strtotime($findUserLogs['lastlogin']));
@@ -306,7 +306,7 @@ class StatsController extends ObsiAppController {
       /*
         On récupère ses données sur la base de données de l'auth
       */
-
+      /*
       ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
       $db = $con->getDataSource('Auth');
 
@@ -318,7 +318,7 @@ class StatsController extends ObsiAppController {
       /*
           Stats de kills ...
       */
-
+      /*
         ConnectionManager::create('KillStats', Configure::read('Obsi.db.KillStats'));
         $db = $con->getDataSource('KillStats');
 
@@ -382,7 +382,7 @@ class StatsController extends ObsiAppController {
         'userRatio',
         'isOnline'
       ));
-
+      */
     } else {
       throw new NotFoundException();
     }
