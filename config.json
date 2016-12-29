@@ -23,11 +23,6 @@
   		"url": "/admin/obsi/prize/"
   	},
 		{
-  		"name": "Ajouter une victoire <br>d'un event End",
-  		"icon": "plus",
-  		"url": "/admin/obsi/paysafecard/add_events_end_win"
-  	},
-		{
   		"name": "Remboursement",
   		"icon": "money",
   		"url": "/admin/obsi/refund/index/"

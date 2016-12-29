@@ -78,38 +78,6 @@ class ObsiAppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
 	);
 
-	public $obsi__end_events_wins = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'faction_name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 30, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $obsi__factions_rankings = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 16, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'leader' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 50, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'kills' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'deaths' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'power' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'ratio' => array('type' => 'float', 'null' => false, 'default' => null, 'unsigned' => false),
-		'golds_pieces' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'end_events' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'kingzombie_events' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'factions_war' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'totems' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'points' => array('type' => 'float', 'null' => false, 'default' => null, 'unsigned' => false),
-		'points_details' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
-	);
-
 	public $obsi__obsiguard_histories = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),

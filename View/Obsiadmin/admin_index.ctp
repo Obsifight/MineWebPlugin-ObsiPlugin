@@ -11,8 +11,6 @@
           <a href="<?= $this->Html->url(array('controller' => 'prize', 'action' => 'index', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-success">Accèder au système de lots</a>
           <a href="<?= $this->Html->url(array('controller' => 'user', 'action' => 'viewPseudoUpdates', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-success">Accèder à l'historique de changements de pseudo</a>
 
-          <a href="<?= $this->Html->url(array('controller' => 'FactionsRanking', 'action' => 'add_events_end_win', 'admin' => true)) ?>" class="btn btn-block btn-lg btn-info">Ajouter une victoire pour un event End</a>
-
         </div>
       </div>
     </div>
