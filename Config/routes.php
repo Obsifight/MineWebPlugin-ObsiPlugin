@@ -13,8 +13,6 @@ Router::connect('/nous-rejoindre/*', array('controller' => 'page', 'action' => '
 Router::connect('/p/nous-rejoindre', array('controller' => 'page', 'action' => 'join_us', 'plugin' => 'obsi'));
 Router::connect('/p/nous-rejoindre/*', array('controller' => 'page', 'action' => 'join_us', 'plugin' => 'obsi'));
 
-Router::connect('/getHeadSkin/*', array('controller' => 'ObsiAPI', 'action' => 'getHeadSkin', 'plugin' => 'obsi'));
-
 Router::connect('/admin/obsi', array('controller' => 'obsiadmin', 'action' => 'index', 'plugin' => 'obsi', 'prefix' => 'admin'));
 
 Router::connect('/admin/Obsi/*', array('controller' => 'user', 'action' => 'viewEmailUpdateRequests', 'plugin' => 'obsi', 'prefix' => 'admin'));
