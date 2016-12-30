@@ -30,14 +30,18 @@ class ObsiGlobalsEventListener implements CakeEventListener {
       // max players
       $cache = Cache::read('maxPlayers', 'data-short');
       if (!$cache) {
-        $this->CountPlayersLog = ClassRegistry::init('Obsi.CountPlayersLog');
-        $findMaxplayers = $this->CountPlayersLog->find('first', array('order' => 'players_online DESC'));
-        $maxPlayers = (isset($findMaxplayers['CountPlayersLog']['players_online'])) ? $findMaxplayers['CountPlayersLog']['players_online'] : 0;
-        Cache::write('maxPlayers', $maxPlayers, 'data-short');
+        $query = @json_decode(@file_get_contents('http://players.api.obsifight.net/max'));
+        if ($query) {
+          $maxPlayers = $query->max;
+          Cache::write('maxPlayers', $maxPlayers, 'data-short');
+        } else {
+          $maxPlayers = 0;
+        }
       } else {
         $maxPlayers = $cache;
       }
       $this->controller->set('maxPlayers', $maxPlayers);
+      $this->controller->set('header', false);
     }
 
     if ($this->controller->params['controller'] == "shop" && $this->controller->params['plugin'] == "shop") {
