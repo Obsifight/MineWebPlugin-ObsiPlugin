@@ -32,6 +32,12 @@
   		"icon": "money",
   		"url": "/admin/shop/income-book",
       "permission": "GET_INCOMES_BOOK"
+  	},
+    {
+  		"name": "Gérer les \"le saviez-vous ?\"",
+  		"icon": "question",
+  		"url": "/admin/infos/did-you-know",
+      "permission": "MANAGE_DID_YOU_KNOW"
   	}
   ],
 	"author":"Eywek",
