@@ -34,4 +34,52 @@ class FactionsRankingController extends ObsiAppController {
     $this->set(compact('pointsCalcul'));
   }
 
+  public function edit() {
+    if (!$this->isConnected)
+      throw new ForbiddenException('Not logged');
+    $factionId = @json_decode(@file_get_contents('http://factions.api.obsifight.net/player/is-leader/' . $this->User->getKey('pseudo')));
+    if (!$factionId || !$factionId->status || !$factionId->isLeader)
+      throw new ForbiddenException('Not leader');
+    $factionId = $factionId->factionId;
+
+    $this->set(compact('factionId'));
+    $this->set('title_for_layout', 'Éditer l\'affichage de votre faction');
+  }
+
+  public function uploadLogo() {
+    $this->autoRender = false;
+    $this->response->type('json');
+
+    // Valid request
+    if (!$this->isConnected)
+      throw new ForbiddenException('Not logged');
+    $factionId = @json_decode(@file_get_contents('http://factions.api.obsifight.net/player/is-leader/' . $this->User->getKey('pseudo')));
+    if (!$factionId || !$factionId->status || !$factionId->isLeader)
+      throw new ForbiddenException('Not leader');
+    $factionId = $factionId->factionId;
+
+    // Config
+    $maxSize = 10000000; // octet
+    $filename = "faction-logo-$factionId.png";
+    $target = WWW_ROOT.DS.'img'.DS.'uploads'.DS.'factions-logo'.DS;
+    $widthMax = 320; // pixel
+    $heightMax = 320; // pixel
+
+    $isValidImg = $this->Util->isValidImage($this->request, array('png'), $widthMax, $heightMax, $maxSize);
+
+    if(!$isValidImg['status']) {
+      $this->response->body(json_encode(array('status' => false, 'msg' => $isValidImg['msg'])));
+      return;
+    } else {
+      $infos = $isValidImg['infos'];
+    }
+
+    if(!$this->Util->uploadImage($this->request, $target.$filename)) {
+      $this->response->body(json_encode(array('status' => false, 'msg' => $this->Lang->get('FORM__ERROR_WHEN_UPLOAD'))));
+      return;
+    }
+
+   $this->response->body(json_encode(array('status' => true, 'msg' => 'Le logo de votre faction a bien été enregistré !')));
+  }
+
 }

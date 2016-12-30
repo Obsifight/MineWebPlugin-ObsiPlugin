@@ -39,4 +39,7 @@ Router::connect('/classement-factions/*', array('controller' => 'FactionsRanking
 Router::connect('/factions/*', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
 Router::connect('/classement/factions/*', array('controller' => 'FactionsRanking', 'action' => 'index', 'plugin' => 'obsi'));
 
+Router::connect('/faction/edit', array('controller' => 'FactionsRanking', 'action' => 'edit', 'plugin' => 'obsi'));
+Router::connect('/faction/edit/upload/logo', array('controller' => 'FactionsRanking', 'action' => 'uploadLogo', 'plugin' => 'obsi'));
+
 Router::connect('/admin/shop/income-book', array('controller' => 'shop', 'action' => 'incomesBook', 'plugin' => 'obsi', 'prefix' => 'admin'));
