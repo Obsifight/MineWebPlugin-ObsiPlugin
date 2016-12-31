@@ -46,3 +46,5 @@ Router::connect('/admin/shop/income-book', array('controller' => 'shop', 'action
 Router::connect('/admin/infos/did-you-know', array('controller' => 'DidYouKnow', 'action' => 'index', 'plugin' => 'obsi', 'prefix' => 'admin'));
 Router::connect('/admin/infos/did-you-know/add', array('controller' => 'DidYouKnow', 'action' => 'add', 'plugin' => 'obsi', 'prefix' => 'admin'));
 Router::connect('/admin/infos/did-you-know/delete/:id', array('controller' => 'DidYouKnow', 'action' => 'delete', 'plugin' => 'obsi', 'prefix' => 'admin'));
+
+Router::connect('/user/google-auth', array('controller' => 'google', 'action' => 'auth', 'plugin' => 'obsi'));
