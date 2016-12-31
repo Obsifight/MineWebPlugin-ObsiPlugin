@@ -1,4 +1,8 @@
 <?php
+if(isset($isInStaff) && $isInStaff && isset($isNotConnected) && $isNotConnected) {
+  echo '<a style="margin-top: -200px;z-index: 99;" href="'.$this->Html->url(array('controller' => 'user', 'action' => 'switchServer', 'plugin' => 'obsi')).'" class="btn btn-info pull-right btn-sm">Me switch sur le serveur PvP</a>';
+}
+
 if(isset($EmailUpdateRequestResponse) && is_array($EmailUpdateRequestResponse) && isset($EmailUpdateRequestResponse['msg']) && isset($EmailUpdateRequestResponse['type'])) {
   echo '<div class="alert alert-'.$EmailUpdateRequestResponse['type'].'">';
   echo $EmailUpdateRequestResponse['msg'];
@@ -8,13 +12,6 @@ if(isset($EmailUpdateRequestResponse) && is_array($EmailUpdateRequestResponse) &
 if(isset($RefundNotification) && $RefundNotification) {
   echo '<div class="alert alert-info">';
     echo $RefundNotification;
-  echo '</div>';
-}
-
-if(isset($isInStaff) && $isInStaff && isset($isNotConnected) && $isNotConnected) {
-  echo '<div class="alert alert-info">';
-    echo 'Vous faites partie du staff et vous n\'êtes pas connecté sur le serveur PvP-Faction ! ';
-    echo '<a href="'.$this->Html->url(array('controller' => 'user', 'action' => 'switchServer', 'plugin' => 'obsi')).'" class="btn btn-info pull-right btn-sm" style="margin-top: -8px;">Me switch sur le serveur PvP</a>';
   echo '</div>';
 }
 
