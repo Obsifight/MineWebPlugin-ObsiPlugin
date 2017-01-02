@@ -41,10 +41,12 @@ class GoogleController extends AppController {
         ));
         // stats
         $subs = intval($channels->getItems()[0]->getStatistics()->getSubscriberCount());
-        if ($subs >= 750)
+        if ($subs >= 750) {
+          $this->Server->call(array('performCommand' => "pex user {$this->User->getKey('pseudo')} group set Youtube"), true, Configure::read('ObsiPlugin.server.pvp.id'));
           $this->Session->setFlash("Tu as plus de 750 abonnés, tu as donc obtenu le grade YouTubeur sur notre serveur ! Bon jeu !", 'toastr.success');
-        else
+        } else {
           $this->Session->setFlash("Tu n'as pas plus de 750 abonnés, tu ne peux donc pas obtenir le grade YouTubeur sur notre serveur pour le moment.", 'toastr.error');
+        }
         return $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
       }
 
