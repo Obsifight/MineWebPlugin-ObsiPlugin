@@ -33,34 +33,77 @@ class RefundController extends ObsiAppController {
         */
           try
           {
-            $bdd_V2 = new PDO("mysql:host=localhost;dbname=web_v2", "website", "Xa59M7jb5bLaq2FZ");
+            $bdd_V2 = new PDO("mysql:host=localhost;dbname=web_v2", "web", "mpV59xL3");
             $bdd_V2->exec("SET NAMES utf8");
           }
           catch (Exception $e)
           {
-            $this->error('Impossible de se connecter à la base de données V2 !');
+            die('Impossible de se connecter à la base de données V2 !');
             return;
           }
           try
           {
-            $bdd_V3 = new PDO("mysql:host=localhost;dbname=web_v3", "website", "Xa59M7jb5bLaq2FZ");
+            $bdd_V3 = new PDO("mysql:host=localhost;dbname=web_v3", "web", "mpV59xL3");
             $bdd_V3->exec("SET NAMES utf8");
           }
           catch (Exception $e)
           {
-            $this->error('Impossible de se connecter à la base de données V4 !');
+            die('Impossible de se connecter à la base de données V4 !');
             return;
           }
           try
           {
-            $bdd_V4 = new PDO("mysql:host=localhost;dbname=web_v4", "website", "Xa59M7jb5bLaq2FZ");
+            $bdd_V4 = new PDO("mysql:host=localhost;dbname=web_v4", "web", "mpV59xL3");
             $bdd_V4->exec("SET NAMES utf8");
           }
           catch (Exception $e)
           {
-            $this->error('Impossible de se connecter à la base de données V4 !');
+            die('Impossible de se connecter à la base de données V4 !');
             return;
           }
+          try
+          {
+            $bdd_V5 = new PDO("mysql:host=localhost;dbname=web_v5", "web", "mpV59xL3");
+            $bdd_V5->exec("SET NAMES utf8");
+          }
+          catch (Exception $e)
+          {
+            die('Impossible de se connecter à la base de données V5 !');
+            return;
+          }
+
+        /*
+          On cherche les achats V4
+        */
+
+          $playerItemsV5 = array();
+
+          $refundInV5 = $bdd_V5->prepare("SELECT id FROM obsi__refund_histories WHERE user_id=:user_id LIMIT 1");
+          $refundInV5->execute(array('user_id' => $searchUser['User']['id']));
+          $refundInV5 = $refundInV5->fetch();
+          $refundInV5 = (!empty($refundInV5));
+
+          $findPlayerHistoriesInV5 = $bdd_V5->prepare("SELECT item_id FROM shop__items_buy_histories WHERE user_id=:user_id");
+          $findPlayerHistoriesInV5->execute(array('user_id' => $searchUser['User']['id']));
+          $findPlayerHistoriesInV5 = $findPlayerHistoriesInV5->fetchAll();
+
+          foreach ($findPlayerHistoriesInV5 as $key => $value) { // On parcours ses achats
+
+            $findItem = $bdd_V5->prepare('SELECT name,price FROM shop__items WHERE id=:item_id LIMIT 1');
+            $findItem->execute(array('item_id' => $value['item_id']));
+            $findItem = $findItem->fetch();
+            if(!empty($findItem)) { // Si on trouve l'article acheté
+
+              $playerItemsV5[] = $findItem;
+
+            }
+            unset($findItem);
+
+
+          }
+          unset($key);
+          unset($value);
+
 
         /*
           On cherche les achats V4
@@ -168,7 +211,9 @@ class RefundController extends ObsiAppController {
           'playerItemsV2',
           'user_pseudo',
           'refunded',
-          'refundedPB'
+          'refundedPB',
+          'playerItemsV5',
+          'refundInV5'
         ));
 
 

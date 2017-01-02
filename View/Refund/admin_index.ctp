@@ -55,6 +55,17 @@
             <hr>
 
             <p>
+              Remboursé à la V4-V5 :
+              <?php
+              if($refundInV4) {
+                echo '<span class="text text-success">Oui</span>';
+              } else {
+                echo '<span class="text text-danger">Non</span>';
+              }
+              ?>
+            </p>
+
+            <p>
               Remboursé à la V3-V4 :
               <?php
               if($refundInV4) {
@@ -92,6 +103,49 @@
                 }
               });
             </script>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="box">
+          <div class="box-header with-border">
+            <h3 class="box-title">Liste des achats de <?= $user_pseudo ?> à la V5</h3>
+          </div>
+          <div class="box-body">
+
+            <?php
+            if(!empty($playerItemsV4)) {
+            ?>
+              <table class="table table-bordered dataTable">
+                <thead>
+                  <tr>
+                    <th>Nom de l'article</th>
+                    <th>Prix de l'article</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+
+                  foreach ($playerItemsV5 as $key => $value) {
+
+                    echo '<tr>';
+
+                      echo '<td>'.$value['name'].'</td>';
+                      echo '<td>'.$value['price'].' PB</td>';
+
+                    echo '</tr>';
+
+                  }
+
+                  ?>
+                </tbody>
+              </table>
+            <?php
+            } else {
+              echo '<div class="alert alert-danger">Le joueur n\'a fais aucun achat à la V4.</div>';
+            }
+            ?>
 
           </div>
         </div>
