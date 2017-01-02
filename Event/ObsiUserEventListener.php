@@ -19,7 +19,7 @@ class ObsiUserEventListener implements CakeEventListener {
           'beforeEditUser' => 'editUserOnAuth',
           'onBuy' => 'checkIfPseudo',
           'onLoadAdminPanel' => 'setVarsOnUserEdit',
-          'onLogin' => 'logConnection',
+          'afterLogin' => 'logConnection',
           'beforeSendResetPassMail' => 'checkIfEmailIsConfirmed'
       );
   }
