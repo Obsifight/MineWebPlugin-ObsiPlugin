@@ -2,7 +2,7 @@
 class RefundController extends ObsiAppController {
 
   public function admin_index($user_pseudo = null) {
-    if($this->isConnected && $this->User->isAdmin()) {
+    if($this->isConnected && $this->Permissions->can('ADMIN_VIEW_REFUNDS')) {
 
       $this->layout = 'admin';
 
@@ -182,7 +182,7 @@ class RefundController extends ObsiAppController {
   }
 
   public function admin_refund($user_pseudo = null, $credits = 0) {
-    if($this->isConnected && $this->User->isAdmin()) {
+    if($this->isConnected && $this->Permissions->can('ADMIN_REFUND_USER')) {
 
       $this->autoRender = false;
 

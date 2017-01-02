@@ -10,22 +10,26 @@
 		{
   		"name": "Demande de changement <br>d'emails",
   		"icon": "envelope",
-  		"url": "/admin/obsi/user/viewEmailUpdateRequests"
+  		"url": "/admin/obsi/user/viewEmailUpdateRequests",
+      "permission": "MANAGE_EMAILS_UPDATE_REQUESTS"
   	},
 		{
   		"name": "Historique de changement <br>de pseudo",
   		"icon": "user-secret",
-  		"url": "/admin/obsi/user/viewPseudoUpdates"
+  		"url": "/admin/obsi/user/viewPseudoUpdates",
+      "permission": "VIEW_PSEUDO_UPDATES"
   	},
 		{
   		"name": "Système de lots",
   		"icon": "inbox",
-  		"url": "/admin/obsi/prize/"
+  		"url": "/admin/obsi/prize/",
+      "permission": "MANAGE_PRIZE"
   	},
 		{
   		"name": "Remboursement",
   		"icon": "money",
-  		"url": "/admin/obsi/refund/index/"
+  		"url": "/admin/obsi/refund/index/",
+      "permission": "ADMIN_VIEW_REFUNDS"
   	},
     {
   		"name": "Livre des recettes",
@@ -45,7 +49,20 @@
 	"apiID":-1,
 	"useEvents":true,
 	"permissions" : {
-		"available" : [],
+		"available" : [
+      "MANAGE_EMAILS_UPDATE_REQUESTS",
+      "MANAGE_DID_YOU_KNOW",
+      "GET_INCOMES_BOOK",
+      "VIEW_PSEUDO_UPDATES",
+      "ADMIN_DELETE_OBSIGUARD_IP",
+      "ADMIN_SWITCH_OBSIGUARD_DYNAMIC",
+      "ADMIN_DISABLE_OBSIGUARD",
+      "ADMIN_ENABLE_OBSIGUARD",
+      "ADMIN_ADD_OBSIGUARD_IP",
+      "MANAGE_PRIZE",
+      "ADMIN_VIEW_REFUNDS",
+      "ADMIN_REFUND_USER"
+    ],
 		"default" : {
 			"0": [],
 			"2": []

@@ -1,1 +1,14 @@
-{}
+{
+  "PERMISSIONS__MANAGE_EMAILS_UPDATE_REQUESTS": "Gérer les demandes de changement d'emails",
+  "PERMISSIONS__MANAGE_DID_YOU_KNOW": "Gérer les \"le saviez-vous ?\"",
+  "PERMISSIONS__GET_INCOMES_BOOK": "Récupérer le livre des recettes",
+  "PERMISSIONS__VIEW_PSEUDO_UPDATES": "Voir l'historique de changement de pseudo sur le panel admin",
+  "PERMISSIONS__ADMIN_DELETE_OBSIGUARD_IP": "Supprimer une IP d'ObsiGuard depuis l'édition d'un joueur sur le panel admin",
+  "PERMISSIONS__ADMIN_SWITCH_OBSIGUARD_DYNAMIC": "Changer l'état de \"IP dynamique\" d'ObsiGuard depuis l'édition d'un joueur sur le panel admin",
+  "PERMISSIONS__ADMIN_DISABLE_OBSIGUARD": "Désactiver ObsiGuard depuis l'édition d'un joueur sur le panel admin",
+  "PERMISSIONS__ADMIN_ENABLE_OBSIGUARD": "Activer ObsiGuard depuis l'édition d'un joueur sur le panel admin",
+  "PERMISSIONS__ADMIN_ADD_OBSIGUARD_IP": "Ajouter une IP d'ObsiGuard depuis l'édition d'un joueur sur le panel admin",
+  "PERMISSIONS__MANAGE_PRIZE": "Gérer les lots sur le panel admin",
+  "PERMISSIONS__ADMIN_VIEW_REFUNDS": "Voir les remboursement d'un joueur sur le panel admin",
+  "PERMISSIONS__ADMIN_REFUND_USER": "Rembourser un utilisateur sur le panel admin"
+}

@@ -8,7 +8,7 @@ class UserController extends ObsiAppController {
 
     function admin_deleteIPObsiguard($user_id, $ip_id) {
       $this->autoRender = false;
-      if($this->isConnected && $this->User->isAdmin()) {
+      if($this->isConnected && $this->Permissions->can('ADMIN_DELETE_OBSIGUARD_IP')) {
         $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
         if(!empty($findUser)) {
 
@@ -51,7 +51,7 @@ class UserController extends ObsiAppController {
 
     function admin_switchObsiguardDynamic($user_id) {
       $this->autoRender = false;
-      if($this->isConnected && $this->User->isAdmin()) {
+      if($this->isConnected && $this->Permissions->can('ADMIN_SWITCH_OBSIGUARD_DYNAMIC')) {
         $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
         if(!empty($findUser)) {
 
@@ -85,7 +85,7 @@ class UserController extends ObsiAppController {
 
     function admin_disableObsiguard($user_id) {
       $this->autoRender = false;
-      if($this->isConnected && $this->User->isAdmin()) {
+      if($this->isConnected && $this->Permissions->can('ADMIN_DISABLE_OBSIGUARD')) {
         $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
         if(!empty($findUser)) {
 
@@ -114,7 +114,7 @@ class UserController extends ObsiAppController {
 
     function admin_enableObsiguard($user_id) {
       $this->autoRender = false;
-      if($this->isConnected && $this->User->isAdmin()) {
+      if($this->isConnected && $this->Permissions->can('ADMIN_ENABLE_OBSIGUARD')) {
         $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
         if(!empty($findUser)) {
 
@@ -143,7 +143,7 @@ class UserController extends ObsiAppController {
 
     function admin_addIPObsiguard($user_id) {
       $this->autoRender = false;
-      if($this->isConnected && $this->User->isAdmin()) {
+      if($this->isConnected && $this->Permissions->can('ADMIN_ADD_OBSIGUARD_IP')) {
         $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
         if(!empty($findUser)) {
 
@@ -645,7 +645,7 @@ class UserController extends ObsiAppController {
     }
 
     public function admin_viewEmailUpdateRequests() {
-      if($this->isConnected AND $this->User->isAdmin()) {
+      if($this->isConnected AND $this->Permissions->can('MANAGE_EMAILS_UPDATE_REQUESTS')) {
 
         $this->layout = 'admin';
 
@@ -722,7 +722,7 @@ class UserController extends ObsiAppController {
 
     public function admin_validEmailUpdateRequest($id = null) {
       $this->autoRender = false;
-      if($this->isConnected AND $this->User->isAdmin()) {
+      if($this->isConnected AND $this->Permissions->can('MANAGE_EMAILS_UPDATE_REQUESTS')) {
 
         if(!empty($id)) {
 
@@ -799,7 +799,7 @@ class UserController extends ObsiAppController {
 
     public function admin_invalidEmailUpdateRequest($id = null) {
       $this->autoRender = false;
-      if($this->isConnected AND $this->User->isAdmin()) {
+      if($this->isConnected AND $this->Permissions->can('MANAGE_EMAILS_UPDATE_REQUESTS')) {
 
         if(!empty($id)) {
 
@@ -966,7 +966,7 @@ class UserController extends ObsiAppController {
     }
 
     public function admin_viewPseudoUpdates() {
-      if($this->isConnected AND $this->User->isAdmin()) {
+      if($this->isConnected AND $this->Permissions->can('VIEW_PSEUDO_UPDATES')) {
 
         $this->layout = 'admin';
 

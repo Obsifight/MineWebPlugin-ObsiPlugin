@@ -2,7 +2,7 @@
 class PrizeController extends ObsiAppController {
 
   public function admin_index() {
-    if($this->isConnected && $this->User->isAdmin()) {
+    if($this->isConnected && $this->Permissions->can('MANAGE_PRIZE')) {
       $this->set('title_for_layout', 'Liste des lots en attente');
       $this->layout = 'admin';
 
@@ -29,7 +29,7 @@ class PrizeController extends ObsiAppController {
   }
 
   public function admin_add() {
-    if($this->isConnected && $this->User->isAdmin()) {
+    if($this->isConnected && $this->Permissions->can('MANAGE_PRIZE')) {
       $this->set('title_for_layout', 'Ajouter un lot');
       $this->layout = 'admin';
     } else {
@@ -38,7 +38,7 @@ class PrizeController extends ObsiAppController {
   }
 
   public function admin_add_ajax($id) {
-    if($this->isConnected && $this->User->isAdmin()) {
+    if($this->isConnected && $this->Permissions->can('MANAGE_PRIZE')) {
 
       $this->autoRender = false;
       if($this->request->is('ajax')) {
@@ -81,7 +81,7 @@ class PrizeController extends ObsiAppController {
   }
 
   public function admin_remove($id = false) {
-    if($this->isConnected && $this->User->isAdmin()) {
+    if($this->isConnected && $this->Permissions->can('MANAGE_PRIZE')) {
       $this->autoRender = false;
 
       if($this->Prize->delete($id)) {
