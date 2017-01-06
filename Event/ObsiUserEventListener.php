@@ -413,7 +413,7 @@ class ObsiUserEventListener implements CakeEventListener {
       $password = $event->data['data']['password'];
 
     // On va l'insérer
-      $db->fetchAll('INSERT INTO `joueurs`( `profileid`, `user_pseudo`, `user_mdp`, `is_register_v5`) VALUES (:profileid,:user_pseudo,:user_mdp, 1)', array(
+      $db->fetchAll('INSERT INTO `joueurs`( `profileid`, `user_pseudo`, `user_mdp`, `is_register_v6`) VALUES (:profileid,:user_pseudo,:user_mdp, 1)', array(
         'profileid' => $profileid,
         'user_pseudo' => $pseudo,
         'user_mdp' => $password
