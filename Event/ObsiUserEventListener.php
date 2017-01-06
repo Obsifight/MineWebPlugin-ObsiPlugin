@@ -301,13 +301,23 @@ class ObsiUserEventListener implements CakeEventListener {
         Switch du serveur
       */
 
-        $staff = Configure::read('ObsiPlugin.staff');
+      /*
+        Switch
+      */
+
+        $cache = Cache::read('stats-ranks-premium', 'data-short');
+        if (!$cache) {
+          $query = @json_decode(@file_get_contents('http://api.obsifight.net/users/staff/premium'), true);
+          $ranks = $query['data'];
+          $ranks = array_reverse($ranks);
+          Cache::write('stats-ranks-premium', $ranks, 'data-short');
+        } else {
+          $ranks = Cache::read('stats-ranks-premium', 'data-short');
+        }
         $isInStaff = false;
-        foreach ($staff as $rank => $users) {
-          if(in_array($user['pseudo'], $users)) {
+        foreach ($ranks as $rankname => $users) {
+          if (in_array($this->controller->User->getKey('pseudo'), $users))
             $isInStaff = true;
-            break;
-          }
         }
 
         $havePrize = false;

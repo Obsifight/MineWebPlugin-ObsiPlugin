@@ -129,6 +129,16 @@ class StatsController extends ObsiAppController {
       Users
     */
 
+    $cache = Cache::read('stats-ranks', 'data-short');
+    if (!$cache) {
+      $query = @json_decode(@file_get_contents('http://api.obsifight.net/users/staff'), true);
+      $ranks = $query['data'];
+      $ranks = array_reverse($ranks);
+      Cache::write('stats-ranks', $ranks, 'data-short');
+    } else {
+      $ranks = Cache::read('stats-ranks', 'data-short');
+    }
+
     $cache = Cache::read('stats-users', 'data-short');
     if (!$cache) {
       $registersUsers['today'] = $this->User->find('count', array('conditions' => array('DATE(created)' => date('Y-m-d'))));
@@ -182,7 +192,8 @@ class StatsController extends ObsiAppController {
       'percentageRegisteredUsersThisWeek',
       'registersUsers',
       'onlinePlayers',
-      'peakTimes'
+      'peakTimes',
+      'ranks'
     ));
   }
 
