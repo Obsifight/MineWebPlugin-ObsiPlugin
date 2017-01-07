@@ -118,7 +118,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
       $findOffer = $this->controller->Paypal->find('first', array('conditions' => array('price' => $amount)));
       if (empty($findOffer))
         throw new InternalErrorException('PayPal : Unknown offer');
-      if ($data['receiver_email'] == $findOffer['Paypal']['email'])
+      if ($data['receiver_email'] != $findOffer['Paypal']['email'])
         throw new InternalErrorException('PayPal : Receiver email invalid');
       // check if not already stored in db
       $this->controller->loadModel('Shop.PaypalHistory');
