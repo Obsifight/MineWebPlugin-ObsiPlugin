@@ -42,7 +42,7 @@ Router::connect('/classement/factions/*', array('controller' => 'FactionsRanking
 Router::connect('/faction/edit', array('controller' => 'FactionsRanking', 'action' => 'edit', 'plugin' => 'obsi'));
 Router::connect('/faction/edit/upload/logo', array('controller' => 'FactionsRanking', 'action' => 'uploadLogo', 'plugin' => 'obsi'));
 
-Router::connect('/admin/shop/income-book', array('controller' => 'shop', 'action' => 'incomesBook', 'plugin' => 'obsi', 'prefix' => 'admin'));
+Router::connect('/admin/shop/income-book', array('controller' => 'ShopPurchases', 'action' => 'incomesBook', 'plugin' => 'obsi', 'prefix' => 'admin'));
 Router::connect('/admin/infos/did-you-know', array('controller' => 'DidYouKnow', 'action' => 'index', 'plugin' => 'obsi', 'prefix' => 'admin'));
 Router::connect('/admin/infos/did-you-know/add', array('controller' => 'DidYouKnow', 'action' => 'add', 'plugin' => 'obsi', 'prefix' => 'admin'));
 Router::connect('/admin/infos/did-you-know/delete/:id', array('controller' => 'DidYouKnow', 'action' => 'delete', 'plugin' => 'obsi', 'prefix' => 'admin'));

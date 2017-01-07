@@ -1,5 +1,5 @@
 <?php
-class ShopController extends ObsiAppController {
+class ShopPurchasesController extends ObsiAppController {
 
   public function admin_incomesBook() {
     if (!$this->isConnected || !$this->Permissions->can('GET_INCOMES_BOOK'))
