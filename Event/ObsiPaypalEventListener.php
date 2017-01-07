@@ -69,7 +69,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
     // ==================
     // form data
     $IPN = 'cmd=_notify-validate';
-    foreach ($this->request->data as $key => $value) {
+    foreach ($this->controller->request->data as $key => $value) {
       $value = urlencode($value);
       $IPN .= "&$key=$value";
     }
