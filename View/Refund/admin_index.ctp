@@ -46,9 +46,9 @@
 
             <?php
             if($refunded) {
-              echo '<div class="alert alert-success">Le joueur a été remboursé de '.$refundedPB.' PB à la V5 !</div>';
+              echo '<div class="alert alert-success">Le joueur a été remboursé de '.$refundedPB.' PB à la V6 !</div>';
             } else {
-              echo '<div class="alert alert-error">Le joueur n\'a pas été remboursé !</div>';
+              echo '<div class="alert alert-error">Le joueur n\'a pas été remboursé lors de la V6 !</div>';
             }
             ?>
 
