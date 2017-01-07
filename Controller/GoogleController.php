@@ -40,9 +40,27 @@ class GoogleController extends AppController {
           'mine' => true
         ));
         // stats
-        $subs = intval($channels->getItems()[0]->getStatistics()->getSubscriberCount());
+        $channel = $channels->getItems()[0];
+        $subs = intval($channel->getStatistics()->getSubscriberCount());
+        $channelId = $channel->getId();
         if ($subs >= 750) {
+          $this->loadModel('Obsi.YoutubeChannel');
+          // check if not already set for other user
+          $find = $this->YoutubeChannel->find('first', array('conditions' => array('youtube_channel_id' => $channelId)));
+          if (!empty($find)) {
+            $this->Session->setFlash("Cette chaine YouTube est déjà attribuée à un autre utilisateur !", 'toastr.error');
+            return $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
+          }
+          // save into history
+          $this->YoutubeChannel->create();
+          $this->YoutubeChannel->set(array(
+            'user_id' => $this->User->getKey('id'),
+            'youtube_channel_id' => $channelId
+          ));
+          $this->YoutubeChannel->save();
+          // server command
           $this->Server->call(array('performCommand' => "pex user {$this->User->getKey('pseudo')} group set Youtube"), true, Configure::read('ObsiPlugin.server.pvp.id'));
+          // notification
           $this->Session->setFlash("Tu as plus de 750 abonnés, tu as donc obtenu le grade YouTubeur sur notre serveur ! Bon jeu !", 'toastr.success');
         } else {
           $this->Session->setFlash("Tu n'as pas plus de 750 abonnés, tu ne peux donc pas obtenir le grade YouTubeur sur notre serveur pour le moment.", 'toastr.error');
