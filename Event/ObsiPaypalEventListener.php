@@ -148,7 +148,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
       $this->controller->PaypalHistory->save();
       // notification
       $this->controller->loadModel('Notification');
-      $this->controller->Notification->setToUser($this->Lang->get('NOTIFICATION__PAYPAL_IPN_VALIDED'), $user_id);
+      $this->controller->Notification->setToUser($this->controller->Lang->get('NOTIFICATION__PAYPAL_IPN_VALIDED'), $user_id);
     }
     // NEW CASE OR REFUND
     else if ($data['payment_status'] == 'Reversed' || $data['payment_status'] == 'Refunded') {
@@ -158,7 +158,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
       if (empty($findPayment))
         throw new NotFoundException('PayPal : Payment not found');
       // find user
-      $findUser = $this->User->find('first', array('conditions' => array('id' => $user_id)));
+      $findUser = $this->controller->User->find('first', array('conditions' => array('id' => $user_id)));
       if (empty($findUser))
         throw new NotFoundException('PayPal : User not found');
       // ban user
