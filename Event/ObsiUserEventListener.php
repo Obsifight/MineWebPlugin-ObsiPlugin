@@ -496,6 +496,18 @@ class ObsiUserEventListener implements CakeEventListener {
       }
 
     }
+    // no edit ranks
+    if(isset($event->data['data']['rank'])) {
+      // On récupère la money actuelle du joueur edit
+      $findUser = $this->controller->User->find('first', array('fields' => array('rank'), 'conditions' => array('id' => $event->data['user_id'])));
+      $rank = $findUser['User']['rank'];
+
+      if($rank != $event->data['data']['rank']) {
+        echo json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas modifier le grade de cet utilisateur !'));
+        $event->stopPropagation();
+        return false;
+      }
+    }
   }
 
   function checkIfPseudo($event) {
