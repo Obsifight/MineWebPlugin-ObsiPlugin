@@ -59,7 +59,7 @@ class GoogleController extends AppController {
           ));
           $this->YoutubeChannel->save();
           // server command
-          $this->Server->call(array('performCommand' => "pex user {$this->User->getKey('pseudo')} group set Youtube"), true, Configure::read('ObsiPlugin.server.pvp.id'));
+          $this->Server->call(array('performCommand' => "pex user {$this->User->getKey('pseudo')} group add Youtube"), true, Configure::read('ObsiPlugin.server.pvp.id'));
           // notification
           $this->Session->setFlash("Tu as plus de 750 abonnés, tu as donc obtenu le grade YouTubeur sur notre serveur ! Bon jeu !", 'toastr.success');
         } else {
