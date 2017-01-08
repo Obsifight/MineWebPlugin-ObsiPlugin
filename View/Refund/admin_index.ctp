@@ -115,7 +115,7 @@
           <div class="box-body">
 
             <?php
-            if(!empty($playerItemsV4)) {
+            if(!empty($playerItemsV5)) {
             ?>
               <table class="table table-bordered dataTable">
                 <thead>
@@ -143,7 +143,7 @@
               </table>
             <?php
             } else {
-              echo '<div class="alert alert-danger">Le joueur n\'a fais aucun achat à la V4.</div>';
+              echo '<div class="alert alert-danger">Le joueur n\'a fais aucun achat à la V5.</div>';
             }
             ?>
 
