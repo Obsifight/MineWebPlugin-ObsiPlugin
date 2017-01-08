@@ -123,8 +123,10 @@ class ObsiPaypalEventListener implements CakeEventListener {
       // check if not already stored in db
       $this->controller->loadModel('Shop.PaypalHistory');
       $findPayment = $this->controller->PaypalHistory->find('first', array('conditions' => array('payment_id' => $txn_id)));
-      if (!empty($findPayment))
-        throw new InternalErrorException('PayPal : Payment already credited');
+      if (!empty($findPayment)) {
+        $this->controller->response->statusCode(200); // payment already credited
+        return false;
+      }
 
       // success, add new sold
       $sold = $this->controller->User->getFromUser('money', $user_id);
@@ -193,7 +195,8 @@ class ObsiPaypalEventListener implements CakeEventListener {
       ));
       $this->controller->PaypalHistory->save();
     }
-    return $this->controller->response->statusCode(200);
+    $this->controller->response->statusCode(200);
+    return false;
   }
 
 }
