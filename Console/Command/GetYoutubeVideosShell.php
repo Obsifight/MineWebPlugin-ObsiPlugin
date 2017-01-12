@@ -80,14 +80,6 @@ class GetYoutubeVideosShell extends AppShell {
           'thumbnail_link' => $publicData->thumbnails->medium->url,
           'publication_date' => date('Y-m-d H:i:s', strtotime($item->contentDetails->videoPublishedAt))
         );
-        // check title
-        if (!preg_match('/obsifight/im', trim($data['title']))) // need contains obsifight
-          continue;
-        // check description
-        if (!preg_match('/obsifight/im', $data['description'])) // need contains obsifight
-          continue;
-        if (!preg_match('/obsifight\.(fr|net)/im', $data['description'])) // need contains link to obsifight.net or obsifight.fr
-          continue;
         // add to result
         $uploads[] = $data;
       }
