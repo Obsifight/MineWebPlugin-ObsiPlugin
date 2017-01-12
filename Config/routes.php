@@ -48,3 +48,4 @@ Router::connect('/admin/infos/did-you-know/add', array('controller' => 'DidYouKn
 Router::connect('/admin/infos/did-you-know/delete/:id', array('controller' => 'DidYouKnow', 'action' => 'delete', 'plugin' => 'obsi', 'prefix' => 'admin'));
 
 Router::connect('/user/google-auth', array('controller' => 'google', 'action' => 'auth', 'plugin' => 'obsi'));
+Router::connect('/user/youtube/videos', array('controller' => 'google', 'action' => 'manageVideos', 'plugin' => 'obsi'));

@@ -72,4 +72,44 @@ class GoogleController extends AppController {
     $this->redirect($client->createAuthUrl()); // node code
   }
 
+  public function manageVideos() {
+    if (!$this->isConnected)
+      throw new ForbiddenException('Not logged');
+    // is youtuber
+    $this->loadModel('Obsi.YoutubeChannel');
+    $findYoutubeChannel = $this->YoutubeChannel->find('first', array('conditions' => array('user_id' => $this->User->getKey('id'))));
+    if (empty($findYoutubeChannel))
+      throw new ForbiddenException('Not youtuber');
+    $channel = $findYoutubeChannel['YoutubeChannel'];
+    $channel_id = $channel['youtube_channel_id'];
+    // find videos
+    $this->loadModel('Obsi.YoutubeVideo');
+    $videos = $this->YoutubeVideo->find('all', array('conditions' => array('channel_id' => $channel_id)));
+    // check if eligible
+    foreach ($videos as $k => $video) {
+      $video = $video['YoutubeVideo'];
+      $videos[$k] = $video;
+      $videos[$k]['eligible'] = false; // default
+      // check title
+      if (!preg_match('/obsifight/im', $video['title'])) // need contains obsifight
+        continue;
+      // check description
+      if (!preg_match('/obsifight/im', $video['description'])) // need contains obsifight
+        continue;
+      if (!preg_match('/obsifight\.(fr|net)/im', $video['description'])) // need contains link to obsifight.net or obsifight.fr
+        continue;
+      // check views
+      if ($video['views_count'] < 100)
+        continue;
+      // check date
+      if (strtotime('+7 days', strtotime($video['publication_date'])) < time()) // upload last 7 days
+        continue;
+      // eligible
+      $videos[$k]['eligible'] = true;
+    }
+    debug($videos);
+    debug($findYoutubeChannel);
+    die();
+  }
+
 }

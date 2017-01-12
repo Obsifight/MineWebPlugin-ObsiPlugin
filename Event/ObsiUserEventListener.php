@@ -235,6 +235,16 @@ class ObsiUserEventListener implements CakeEventListener {
 
 
       /*
+        YouTuber
+      */
+      $this->controller->loadModel('Obsi.YoutubeChannel');
+      $findYoutubeChannel = $this->controller->YoutubeChannel->find('all', array('conditions' => array('user_id' => $this->controller->User->getKey('id'))));
+      if (!empty($findYoutubeChannel))
+        $youtuber = true;
+      else
+        $youtuber = false;
+
+      /*
         Skins & capes
       */
 
@@ -355,7 +365,8 @@ class ObsiUserEventListener implements CakeEventListener {
         'isInStaff',
         'isNotConnected',
         'havePrize',
-        'prize'
+        'prize',
+        'youtuber'
       ));
 
       /*
