@@ -60,6 +60,7 @@ class GoogleController extends AppController {
           $this->YoutubeChannel->save();
           // server command
           $this->Server->call(array('performCommand' => "pex user {$this->User->getKey('pseudo')} group add Youtube"), true, Configure::read('ObsiPlugin.server.pvp.id'));
+          $this->Server->call(array('performCommand' => "pex user {$this->User->getKey('pseudo')} group remove guerrier"), true, Configure::read('ObsiPlugin.server.pvp.id'));
           // notification
           $this->Session->setFlash("Tu as plus de 750 abonnés, tu as donc obtenu le grade YouTubeur sur notre serveur ! Bon jeu !", 'toastr.success');
         } else {
@@ -85,31 +86,9 @@ class GoogleController extends AppController {
     // find videos
     $this->loadModel('Obsi.YoutubeVideo');
     $videos = $this->YoutubeVideo->find('all', array('conditions' => array('channel_id' => $channel_id)));
-    // check if eligible
-    foreach ($videos as $k => $video) {
-      $video = $video['YoutubeVideo'];
-      $videos[$k] = $video;
-      $videos[$k]['eligible'] = false; // default
-      // check title
-      if (!preg_match('/obsifight/im', $video['title'])) // need contains obsifight
-        continue;
-      // check description
-      if (!preg_match('/obsifight/im', $video['description'])) // need contains obsifight
-        continue;
-      if (!preg_match('/obsifight\.(fr|net)/im', $video['description'])) // need contains link to obsifight.net or obsifight.fr
-        continue;
-      // check views
-      if ($video['views_count'] < 100)
-        continue;
-      // check date
-      if (strtotime('+7 days', strtotime($video['publication_date'])) < time()) // upload last 7 days
-        continue;
-      // eligible
-      $videos[$k]['eligible'] = true;
-    }
-    debug($videos);
-    debug($findYoutubeChannel);
-    die();
+
+    // vars
+    $this->set(compact('videos', 'channel_id'));
   }
 
 }

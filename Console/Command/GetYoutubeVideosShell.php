@@ -78,8 +78,23 @@ class GetYoutubeVideosShell extends AppShell {
           'views_count' => $video->statistics->viewCount,
           'likes_count' => $video->statistics->likeCount,
           'thumbnail_link' => $publicData->thumbnails->medium->url,
-          'publication_date' => date('Y-m-d H:i:s', strtotime($item->contentDetails->videoPublishedAt))
+          'publication_date' => date('Y-m-d H:i:s', strtotime($item->contentDetails->videoPublishedAt)),
+          'eligible' => false
         );
+        // check title
+        if (preg_match('/obsifight/im', $data['title'])) // need contains obsifight
+          $data['eligible'] = true;
+        // check description
+        if (preg_match('/obsifight/im', $data['description'])) // need contains obsifight
+          $data['eligible'] = true;
+        if (preg_match('/obsifight\.(fr|net)/im', $data['description'])) // need contains link to obsifight.net or obsifight.fr
+          $data['eligible'] = true;
+        // check views
+        if ($video['views_count'] >= 100)
+          $data['eligible'] = true;
+        // check date
+        if (strtotime('+7 days', strtotime($data['publication_date'])) > time()) // upload last 7 days
+          $data['eligible'] = true;
         // add to result
         $uploads[] = $data;
       }
