@@ -89,6 +89,7 @@ class GoogleController extends AppController {
 
     // vars
     $this->set(compact('videos', 'channel_id'));
+    $this->set('title_for_layout', 'Vos vidéos');
   }
 
 }
