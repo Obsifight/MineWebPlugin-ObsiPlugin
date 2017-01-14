@@ -42,6 +42,12 @@
   		"icon": "question",
   		"url": "/admin/infos/did-you-know",
       "permission": "MANAGE_DID_YOU_KNOW"
+  	},
+    {
+  		"name": "Historique des <br>rémunérations par YouTube",
+  		"icon": "youtube",
+  		"url": "/admin/youtube/videos/remuneration/",
+      "permission": "ADMIN_VIEW_VIDEO_REMUNERATION_HISTORY"
   	}
   ],
 	"author":"Eywek",
@@ -61,7 +67,8 @@
       "ADMIN_ADD_OBSIGUARD_IP",
       "MANAGE_PRIZE",
       "ADMIN_VIEW_REFUNDS",
-      "ADMIN_REFUND_USER"
+      "ADMIN_REFUND_USER",
+      "ADMIN_VIEW_VIDEO_REMUNERATION_HISTORY"
     ],
 		"default" : {
 			"0": [],

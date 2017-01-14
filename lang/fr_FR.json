@@ -10,5 +10,6 @@
   "PERMISSIONS__ADMIN_ADD_OBSIGUARD_IP": "Ajouter une IP d'ObsiGuard depuis l'édition d'un joueur sur le panel admin",
   "PERMISSIONS__MANAGE_PRIZE": "Gérer les lots sur le panel admin",
   "PERMISSIONS__ADMIN_VIEW_REFUNDS": "Voir les remboursement d'un joueur sur le panel admin",
-  "PERMISSIONS__ADMIN_REFUND_USER": "Rembourser un utilisateur sur le panel admin"
+  "PERMISSIONS__ADMIN_REFUND_USER": "Rembourser un utilisateur sur le panel admin",
+  "PERMISSIONS__ADMIN_VIEW_VIDEO_REMUNERATION_HISTORY": "Voir l'historique des rémunérations par vidéos youtube."
 }

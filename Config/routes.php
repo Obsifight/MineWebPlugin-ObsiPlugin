@@ -50,3 +50,4 @@ Router::connect('/admin/infos/did-you-know/delete/:id', array('controller' => 'D
 Router::connect('/user/google-auth', array('controller' => 'google', 'action' => 'auth', 'plugin' => 'obsi'));
 Router::connect('/user/youtube/videos', array('controller' => 'google', 'action' => 'manageVideos', 'plugin' => 'obsi'));
 Router::connect('/user/youtube/videos/remuneration/:id', array('controller' => 'google', 'action' => 'remuneration', 'plugin' => 'obsi'));
+Router::connect('/admin/youtube/videos/remuneration/', array('controller' => 'google', 'action' => 'history', 'plugin' => 'obsi', 'prefix' => 'admin'));

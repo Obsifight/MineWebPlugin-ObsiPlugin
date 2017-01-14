@@ -146,4 +146,14 @@ class GoogleController extends AppController {
     $this->redirect('/user/youtube/videos');
   }
 
+  public function admin_history() {
+    if (!$this->isConnected || !$this->Permissions->can('ADMIN_VIEW_VIDEO_REMUNERATION_HISTORY'))
+      throw new ForbiddenException();
+    $this->layout = 'admin';
+    $this->set('title_for_layout', "Voir l'historique des rémunérations");
+
+    $this->loadModel('Obsi.YoutubeVideosRemunerationHistory');
+    $this->set('histories', $this->YoutubeVideosRemunerationHistory->find('all', array('order' => 'id DESC')));
+  }
+
 }
