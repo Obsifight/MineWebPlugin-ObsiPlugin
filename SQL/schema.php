@@ -147,6 +147,44 @@ class ObsiAppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
 	);
 
+  public $obsi__youtube_videos = array(
+    'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+    'channel_id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 150, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'video_id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 150, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'title' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'description' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'views_count' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+    'likes_count' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+    'thumbnail_link' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'publication_date' => array('type' => 'datetime', 'null' => false, 'default' => null),
+    'eligible' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 4, 'unsigned' => false),
+    'payed' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 4, 'unsigned' => false),
+    'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+    'indexes' => array(
+      'PRIMARY' => array('column' => 'id', 'unique' => 1),
+      'id' => array('column' => 'id', 'unique' => 1)
+    ),
+    'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
+  );
+
+  public $obsi__youtube_videos_remuneration_histories = array(
+    'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+    'video_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+    'youtube_video_id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 150, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'channel_id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 150, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'title' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'description' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'charset' => 'latin1'),
+    'publication_date' => array('type' => 'datetime', 'null' => false, 'default' => null),
+    'views_count' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+    'likes_count' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+    'remuneration' => array('type' => 'float', 'null' => false, 'default' => null, 'unsigned' => false),
+    'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+    'indexes' => array(
+      'PRIMARY' => array('column' => 'id', 'unique' => 1)
+    ),
+    'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
+  );
+
 	public $users = array(
 		'obsi-skin_uploaded' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false),
 		'obsi-cape_uploaded' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1, 'unsigned' => false),

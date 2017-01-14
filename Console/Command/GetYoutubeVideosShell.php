@@ -1,7 +1,7 @@
 <?php
 class GetYoutubeVideosShell extends AppShell {
 
-  public $uses = array('User', 'Obsi.YoutubeChannel', 'Obsi.YoutubeVideos'); //Models
+  public $uses = array('User', 'Obsi.YoutubeChannel', 'Obsi.YoutubeVideo'); //Models
   private $developer_key = 'AIzaSyCZCZOTBbcY-W183Yk2sC6DAgvHP5doA08';
   private $versionOpenDate = '2017-01-07 17:00:00';
 
@@ -29,7 +29,7 @@ class GetYoutubeVideosShell extends AppShell {
       $uploads = $this->getUploadsFromUploadsPlaylist($uploadsPlaylistId, $channel_id, $youtube);
       // set into database
       if (!empty($uploads))
-        $this->YoutubeVideos->saveAll($uploads);
+        $this->YoutubeVideo->saveAll($uploads);
     }
   }
 
@@ -69,8 +69,11 @@ class GetYoutubeVideosShell extends AppShell {
           continue;
         $video = $video->getItems()[0];
         $publicData = $video->getSnippet();
+        // find in db
+        $findVideo = $this->YoutubeVideo->find('first', array('conditions' => array('video_id' => $item->contentDetails->videoId)));
         // formatting
         $data = array(
+          'id' => ($findVideo && !empty($findVideo)) ? $findVideo['YoutubeVideo']['id'] : null,
           'channel_id' => $channel_id,
           'video_id' => $item->contentDetails->videoId,
           'title' => $publicData->localized->title,

@@ -92,4 +92,58 @@ class GoogleController extends AppController {
     $this->set('title_for_layout', 'Vos vidéos');
   }
 
+  public function remuneration() {
+    $this->autoRender = false;
+    if (!$this->isConnected)
+      throw new ForbiddenException('Not logged');
+    if (!$this->request->params['id'])
+      throw new NotFoundException('Missing id');
+    // is youtuber
+    $this->loadModel('Obsi.YoutubeChannel');
+    $findYoutubeChannel = $this->YoutubeChannel->find('first', array('conditions' => array('user_id' => $this->User->getKey('id'))));
+    if (empty($findYoutubeChannel))
+      throw new ForbiddenException('Not youtuber');
+    $channel = $findYoutubeChannel['YoutubeChannel'];
+    $channel_id = $channel['youtube_channel_id'];
+    // find video
+    $this->loadModel('Obsi.YoutubeVideo');
+    $findVideo = $this->YoutubeVideo->find('first', array('conditions' => array('id' => $this->request->params['id'], 'channel_id' => $channel_id, 'eligible' => true, 'payed' => false)));
+    if (empty($findVideo))
+      throw new NotFoundException('Video not found');
+    $video = $findVideo['YoutubeVideo'];
+
+    // calcul
+    $remuneration = 0.3 * $video['views_count'] + 0.5 * $video['likes_count'];
+    // Calculate new sold
+    $findUser = $this->User->find('first', array('conditions' => array('id' => $this->User->getKey('id'))));
+    $newSold = floatval($findUser['User']['money']) + floatval($remuneration);
+    // Set new sold
+    $this->User->id = $this->User->getKey('id');
+    $this->User->saveField('money', $newSold);
+
+    // set video as non-eligible
+    $this->YoutubeVideo->read(null, $video['id']);
+    $this->YoutubeVideo->set(array('payed' => true));
+    $this->YoutubeVideo->save();
+    // set in history video infos + remuneration
+    $this->loadModel('Obsi.YoutubeVideosRemunerationHistory');
+    $this->YoutubeVideosRemunerationHistory->create();
+    $this->YoutubeVideosRemunerationHistory->set(array(
+      'video_id' => $video['id'],
+      'youtube_video_id' => $video['video_id'],
+      'channel_id' => $video['channel_id'],
+      'title' => $video['title'],
+      'description' => $video['description'],
+      'publication_date' => $video['publication_date'],
+      'views_count' => $video['views_count'],
+      'likes_count' => $video['likes_count'],
+      'remuneration' => $remuneration
+    ));
+    $this->YoutubeVideosRemunerationHistory->save();
+
+    // redirect + success msg
+    $this->Session->setFlash("Vous avez été rémunéré de {$remuneration} {$this->Configuration->getMoneyName()} pour votre vidéo \"{$video['title']}\".", 'toastr.success');
+    $this->redirect('/user/youtube/videos');
+  }
+
 }
