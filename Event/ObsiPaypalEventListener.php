@@ -156,7 +156,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
     else if ($data['payment_status'] == 'Reversed' || $data['payment_status'] == 'Refunded') {
       // find payment
       $this->controller->loadModel('Shop.PaypalHistory');
-      $findPayment = $this->controller->PaypalHistory->find('first', array('conditions' => array('payment_id' => $txn_id)));
+      $findPayment = $this->controller->PaypalHistory->find('first', array('conditions' => array('payment_id' => $data['parent_txn_id'])));
       if (empty($findPayment))
         throw new NotFoundException('PayPal : Payment not found');
       // find user
@@ -179,7 +179,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
     else if ($data['payment_status'] == 'Canceled_Reversal') {
       // find payment
       $this->controller->loadModel('Shop.PaypalHistory');
-      $findPayment = $this->controller->PaypalHistory->find('first', array('conditions' => array('payment_id' => $txn_id)));
+      $findPayment = $this->controller->PaypalHistory->find('first', array('conditions' => array('payment_id' => $data['parent_txn_id'])));
       if (empty($findPayment))
         throw new NotFoundException('PayPal : Payment not found');
       // find user
