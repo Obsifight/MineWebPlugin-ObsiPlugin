@@ -16,7 +16,7 @@ class ObsiShopEventListener implements CakeEventListener {
   }
 
   public function restrictAccount($event) {
-    if ($this->controller->params['controller'] != 'payment' || $this->controller->params['action'] != 'addCredit' || $this->controller->params['plugin'] != 'ShopPlus')
+    if ($this->controller->params['controller'] != 'PaymentPage' || $this->controller->params['action'] != 'addCredit' || $this->controller->params['plugin'] != 'ShopPlus')
       return;
     $this->controller->loadModel('Shop.PaypalHistory');
     $findPayment = $this->controller->PaypalHistory->find('first', array('conditions' => array(
