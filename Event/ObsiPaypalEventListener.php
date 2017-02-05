@@ -164,11 +164,12 @@ class ObsiPaypalEventListener implements CakeEventListener {
       if (empty($findUser))
         throw new NotFoundException('PayPal : User not found');
       // ban user
-      $this->__apiBan($findUser['User']['username']);
+      $this->__apiBan($findUser['User']['pseudo']);
       // edit payment_status
       $this->controller->PaypalHistory->read(null, $findPayment['PaypalHistory']['id']);
       $data = array(
-        'obsi-status' => strtoupper($data['payment_status'])
+        'obsi-status' => strtoupper($data['payment_status']),
+        'obsi-case_date' => date('Y-m-d H:i:s')
       );
       if ($data['payment_status'] == 'Reversed')
         $data['obsi-case_date'] = date('Y-m-d H:i:s');// add date
@@ -187,7 +188,7 @@ class ObsiPaypalEventListener implements CakeEventListener {
       if (empty($findUser))
         throw new NotFoundException('PayPal : User not found');
       // unban user
-      $this->__apiUnban($findUser['User']['username']);
+      $this->__apiUnban($findUser['User']['pseudo']);
       // edit payment status
       $this->controller->PaypalHistory->read(null, $findPayment['PaypalHistory']['id']);
       $this->controller->PaypalHistory->set(array(
