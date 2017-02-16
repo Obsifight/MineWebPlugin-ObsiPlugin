@@ -406,106 +406,75 @@ class UserController extends ObsiAppController {
 
     function sendPoints() {
       $this->autoRender = false;
-  		if($this->isConnected) {
-  			if($this->request->is('ajax')) {
-
-  				if(!empty($this->request->data['to']) && !empty($this->request->data['howMany']) && !empty($this->request->data['password'])) {
-
-            $this->request->data['to'] = trim($this->request->data['to']);
-            if(strtolower($this->request->data['to']) != strtolower($this->User->getKey('pseudo')) && intval($this->request->data['to']) != $this->User->getKey('id')) {
-
-              $password = $this->Util->password($this->request->data['password'], $this->User->getKey('pseudo'));
-              if($password == $this->User->getKey('password')) {
-
-      					if($this->User->exist($this->request->data['to'])) {
-
-      						$how = intval($this->request->data['howMany']);
-
-      						if($how > 0) {
-
-      							$money_user = $this->User->getKey('money') - $how;
-
-      							if($money_user >= 0) {
-
-                      /*
-                        On vérifie qu'il est pas ban
-                      */
-                      $this->Sanctions = $this->Components->load('Obsi.Sanctions');
-                      if(!$this->Sanctions->isBanned($this->User->getKey('pseudo'), $this->Components->load('Obsi.Api'))) {
-
-                        /*
-                          On vérifie qu'il est son email confirmé
-                        */
-                        $confirmed = $this->User->getKey('confirmed');
-                        if(empty($confirmed) || date('Y-m-d H:i:s', strtotime($confirmed)) == $confirmed) {
-
-                          // On vérifie qu'il ai pas un litige en cours ou fermé
-                          $this->loadModel('Shop.PaypalHistory');
-                          $findPayment = $this->PaypalHistory->find('first', array('conditions' => array(
-                            'user_id' => $this->User->getKey('id'),
-                            'obsi-status' => array('REVERSED', 'CANCELED_REVERSAL', 'REFUNDED')
-                          )));
-                          if (!empty($findPayment)) {
-                            echo json_encode(array('statut' => false, 'msg' => 'Votre compte est restreint, vous ne pouvez pas envoyer des points.'));
-                            return;
-                          }
-
-                          $to = $this->User->getFromUser('id', $this->request->data['to']);
-
-          								$this->User->setKey('money', $money_user);
-          								$to_money = $this->User->getFromUser('money', $to) + $how;
-          								$this->User->setToUser('money', $to_money, $this->request->data['to']);
-
-                          $this->loadModel('Shop.PointsTransferHistory');
-                          $this->PointsTransferHistory->create();
-                          $this->PointsTransferHistory->set(array(
-                            'user_id' => $to,
-                            'points' => $how,
-                            'author_id' => $this->User->getKey('id')
-                          ));
-                          $this->PointsTransferHistory->save();
-                          $this->History->set('SEND_MONEY', 'shop', $to.'|'.$how);
-
-          								echo json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $money_user));
-
-                        } else {
-                          echo json_encode(array('statut' => false, 'msg' => 'Vous n\'avez pas confirmé votre email ! Vous ne pouvez pas transférez vos points !'));
-                        }
-
-                      } else {
-                        echo json_encode(array('statut' => false, 'msg' => 'Vous êtes banni ! Vous ne pouvez pas transférez vos points !'));
-                      }
-
-      							} else {
-      								echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY')));
-      							}
-
-      						} else {
-      							echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY')));
-      						}
-
-      					} else {
-      						echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_NOT_FOUND')));
-      					}
-
-              } else {
-                echo json_encode(array('statut' => false, 'msg' => 'Votre mot de passe est incorrect.'));
-              }
-
-            } else {
-              echo json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas envoyer de points boutique à vous même !'));
-            }
-
-  				} else {
-  					echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__FILL_ALL_FIELDS')));
-  				}
-
-  			} else {
-  				echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__BAD_REQUEST')));
-  			}
-  		} else {
-  			echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_MUST_BE_LOGGED')));
-  		}
+      $this->response->type('json');
+      if (!$this->isConnected)
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_MUST_BE_LOGGED'))));
+      if (!$this->request->is('ajax'))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__BAD_REQUEST'))));
+      if (empty($this->request->data['to']) || empty($this->request->data['howMany']) || empty($this->request->data['password']))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__FILL_ALL_FIELDS'))));
+      // check user
+      $this->request->data['to'] = trim($this->request->data['to']);
+      if (strtolower($this->request->data['to']) == strtolower($this->User->getKey('pseudo')) || intval($this->request->data['to']) == $this->User->getKey('id'))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas envoyer de points boutique à vous même !')));
+      if (!$this->User->exist($this->request->data['to']))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_NOT_FOUND'))));
+      // check password
+      $password = $this->Util->password($this->request->data['password'], $this->User->getKey('pseudo'));
+      if ($password != $this->User->getKey('password'))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Votre mot de passe est incorrect.')));
+      // check amount
+      $how = intval($this->request->data['howMany']);
+      if ($how <= 0)
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY'))));
+      $moneyUser = $this->User->getKey('money') - $how;
+      if ($moneyUser < 0)
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY'))));
+      // check if not ban
+      $this->Sanctions = $this->Components->load('Obsi.Sanctions');
+      if ($this->Sanctions->isBanned($this->User->getKey('pseudo'), $this->Components->load('Obsi.Api')))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous êtes banni ! Vous ne pouvez pas transférez vos points !')));
+      // check if email is confirmed
+      $confirmed = $this->User->getKey('confirmed');
+      if (!empty($confirmed) && date('Y-m-d H:i:s', strtotime($confirmed)) != $confirmed) // not a date or null
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous n\'avez pas confirmé votre email ! Vous ne pouvez pas transférez vos points !')));
+      // check paypal litige
+      $this->loadModel('Shop.PaypalHistory');
+      $findPayment = $this->PaypalHistory->find('first', array('conditions' => array(
+        'user_id' => $this->User->getKey('id'),
+        'obsi-status' => array('REVERSED', 'CANCELED_REVERSAL', 'REFUNDED')
+      )));
+      if (!empty($findPayment))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Votre compte est restreint, vous ne pouvez pas envoyer des points.')));
+      // get user
+      $to = $this->User->getFromUser('id', $this->request->data['to']);
+      // cooldown
+      $this->loadModel('Shop.PointsTransferHistory');
+      $findCooldown = $this->PointsTransferHistory->find('first', array('conditions' => array(
+        'or' => array(
+          'user_id' => array($to, $this->User->getKey('id')),
+          'author_id' => array($to, $this->User->getKey('id'))
+        ),
+        'created > DATE_SUB(NOW(), INTERVAL 5 SECOND)'
+      )));
+      if (!empty($findCooldown))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous devez attendre un certain moment avant de pouvoir faire un transfert.')));
+      // edit money
+      $this->User->setKey('money', $moneyUser);
+      $toMoney = $this->User->getFromUser('money', $to) + $how;
+      $this->User->setToUser('money', $toMoney, $this->request->data['to']);
+      // add to history
+      $this->loadModel('Shop.PointsTransferHistory');
+      $this->PointsTransferHistory->create();
+      $this->PointsTransferHistory->set(array(
+        'user_id' => $to,
+        'points' => $how,
+        'author_id' => $this->User->getKey('id')
+      ));
+      $this->PointsTransferHistory->save();
+      $this->History->set('SEND_MONEY', 'shop', $to.'|'.$how);
+      // response
+      return $this->response->body(json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $moneyUser)));
     }
 
   /*
