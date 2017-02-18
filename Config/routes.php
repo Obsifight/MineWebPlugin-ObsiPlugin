@@ -6,6 +6,9 @@ Router::connect('/register/*', array('controller' => 'user', 'action' => 'signup
 Router::connect('/inscription', array('controller' => 'user', 'action' => 'signup', 'plugin' => 'obsi'));
 Router::connect('/inscription/*', array('controller' => 'user', 'action' => 'signup', 'plugin' => 'obsi'));
 
+Router::connect('/user/send-points/disable', array('controller' => 'user', 'action' => 'disableSendPoints', 'plugin' => 'obsi'));
+Router::connect('/user/send-points/enable', array('controller' => 'user', 'action' => 'enableSendPoints', 'plugin' => 'obsi'));
+
 Router::connect('/join_us', array('controller' => 'page', 'action' => 'join_us', 'plugin' => 'obsi'));
 Router::connect('/join_us/*', array('controller' => 'page', 'action' => 'join_us', 'plugin' => 'obsi'));
 Router::connect('/nous-rejoindre', array('controller' => 'page', 'action' => 'join_us', 'plugin' => 'obsi'));

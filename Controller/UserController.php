@@ -413,31 +413,35 @@ class UserController extends ObsiAppController {
         return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__BAD_REQUEST'))));
       if (empty($this->request->data['to']) || empty($this->request->data['howMany']) || empty($this->request->data['password']))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__FILL_ALL_FIELDS'))));
+
+      // check if enabled
+      $this->loadModel('Shop.PointsTransferHistory');
+      $check = $this->PointsTransferHistory->find('first', array('conditions' => array('points' => '-1', 'user_id' => -1, 'author_id' => -1)));
+      if (!empty($check))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Le transfert de points est temporairement désactivé.')));
+
       // check user
       $this->request->data['to'] = trim($this->request->data['to']);
       if (strtolower($this->request->data['to']) == strtolower($this->User->getKey('pseudo')) || intval($this->request->data['to']) == $this->User->getKey('id'))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas envoyer de points boutique à vous même !')));
       if (!$this->User->exist($this->request->data['to']))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('USER__ERROR_NOT_FOUND'))));
+
       // check password
       $password = $this->Util->password($this->request->data['password'], $this->User->getKey('pseudo'));
       if ($password != $this->User->getKey('password'))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Votre mot de passe est incorrect.')));
-      // check amount
-      $how = intval($this->request->data['howMany']);
-      if ($how <= 0)
-        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY'))));
-      $moneyUser = $this->User->getKey('money') - $how;
-      if ($moneyUser < 0)
-        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY'))));
+
       // check if not ban
       $this->Sanctions = $this->Components->load('Obsi.Sanctions');
       if ($this->Sanctions->isBanned($this->User->getKey('pseudo'), $this->Components->load('Obsi.Api')))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous êtes banni ! Vous ne pouvez pas transférez vos points !')));
+
       // check if email is confirmed
       $confirmed = $this->User->getKey('confirmed');
       if (!empty($confirmed) && date('Y-m-d H:i:s', strtotime($confirmed)) != $confirmed) // not a date or null
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous n\'avez pas confirmé votre email ! Vous ne pouvez pas transférez vos points !')));
+
       // check paypal litige
       $this->loadModel('Shop.PaypalHistory');
       $findPayment = $this->PaypalHistory->find('first', array('conditions' => array(
@@ -446,10 +450,11 @@ class UserController extends ObsiAppController {
       )));
       if (!empty($findPayment))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Votre compte est restreint, vous ne pouvez pas envoyer des points.')));
+
       // get user
       $to = $this->User->getFromUser('id', $this->request->data['to']);
+
       // cooldown
-      $this->loadModel('Shop.PointsTransferHistory');
       $findCooldown = $this->PointsTransferHistory->find('first', array('conditions' => array(
         'or' => array(
           'user_id' => array($to, $this->User->getKey('id')),
@@ -459,10 +464,35 @@ class UserController extends ObsiAppController {
       )));
       if (!empty($findCooldown))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous devez attendre un certain moment avant de pouvoir faire un transfert.')));
+
+      // find current user
+      $this->User->cacheQueries = false;
+      $user = $this->User->find('first', array('conditions' => array('id' => $this->User->getKey('id'))));
+      if (empty($user)) throw new InternalErrorException();
+      // find receiver user
+      $receiver = $this->User->find('first', array('conditions' => array('id' => $to)));
+      if (empty($receiver)) throw new InternalErrorException();
+
+      // check amount
+      $how = floatval($this->request->data['howMany']);
+      if ($how <= 0)
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY'))));
+      $moneyUser = floatval($user['User']['money']) - $how;
+      if ($moneyUser < 0)
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY'))));
+
       // edit money
-      $this->User->setKey('money', $moneyUser);
-      $toMoney = $this->User->getFromUser('money', $to) + $how;
-      $this->User->setToUser('money', $toMoney, $this->request->data['to']);
+      $this->User->saveAll(array(
+        array(
+          'id' => $this->User->getKey('id'),
+          'money' => $moneyUser
+        ),
+        array(
+          'id' => $to,
+          'money' => (floatval($receiver['User']['money']) + $how)
+        )
+      ));
+
       // add to history
       $this->loadModel('Shop.PointsTransferHistory');
       $this->PointsTransferHistory->create();
@@ -475,6 +505,33 @@ class UserController extends ObsiAppController {
       $this->History->set('SEND_MONEY', 'shop', $to.'|'.$how);
       // response
       return $this->response->body(json_encode(array('statut' => true, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_SUCCESS'), 'newSold' => $moneyUser)));
+    }
+
+    public function disableSendPoints() {
+      $this->autoRender = false;
+      if (!$this->isConnected || !$this->Permissions->can('ADMIN_DISABLE_SEND_POINTS'))
+        throw new ForbiddenException();
+
+      $this->loadModel('Shop.PointsTransferHistory');
+      $this->PointsTransferHistory->create();
+      $this->PointsTransferHistory->set(array('points' => '-1', 'user_id' => -1, 'author_id' => -1));
+      $this->PointsTransferHistory->save();
+
+      $this->Session->setFlash('Vous avez désactivé le transfert de points !', 'default.success');
+      $this->redirect('/admin/shop/payment');
+    }
+
+    public function enableSendPoints() {
+      $this->autoRender = false;
+      if (!$this->isConnected || !$this->Permissions->can('ADMIN_DISABLE_SEND_POINTS'))
+        throw new ForbiddenException();
+
+      $this->loadModel('Shop.PointsTransferHistory');
+      $id = $this->PointsTransferHistory->find('first', array('conditions' => array('points' => '-1', 'user_id' => -1, 'author_id' => -1)));
+      $this->PointsTransferHistory->delete($id['PointsTransferHistory']['id']);
+
+      $this->Session->setFlash('Vous avez activé le transfert de points !', 'default.success');
+      $this->redirect('/admin/shop/payment');
     }
 
   /*

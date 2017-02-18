@@ -16,6 +16,12 @@ class ObsiShopEventListener implements CakeEventListener {
   }
 
   public function restrictAccount($event) {
+    if ($this->controller->params['controller'] == 'payment' && $this->controller->params['action'] == 'admin_index' && $this->controller->params['plugin'] == 'shop') {
+      $this->controller->set('canDisableSendPoints', $this->controller->Permissions->can('ADMIN_DISABLE_SEND_POINTS'));
+      $this->controller->loadModel('Shop.PointsTransferHistory');
+      $this->controller->set('sendPointsState', empty($this->controller->PointsTransferHistory->find('first', array('conditions' => array('points' => '-1', 'user_id' => -1, 'author_id' => -1)))));
+    }
+
     if ($this->controller->params['controller'] != 'PaymentPage' || $this->controller->params['action'] != 'addCredit' || $this->controller->params['plugin'] != 'ShopPlus')
       return;
     $this->controller->loadModel('Shop.PaypalHistory');
