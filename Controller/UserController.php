@@ -460,10 +460,33 @@ class UserController extends ObsiAppController {
           'user_id' => array($to, $this->User->getKey('id')),
           'author_id' => array($to, $this->User->getKey('id'))
         ),
-        'created > DATE_SUB(NOW(), INTERVAL 5 SECOND)'
+        'created > DATE_SUB(NOW(), INTERVAL 1 MINUTE)'
       )));
       if (!empty($findCooldown))
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous devez attendre un certain moment avant de pouvoir faire un transfert.')));
+      // limit (2250 pb by day)
+      $limitByDay = $this->PointsTransferHistory->find('first', array(
+        'fields' => 'SUM(`points`)',
+        'conditions' => array(
+          'or' => array(
+            'user_id' => array($to, $this->User->getKey('id')),
+            'author_id' => array($to, $this->User->getKey('id'))
+          ),
+          "created LIKE '" . date('Y-m-d') . "%'"
+        )
+      ));
+      if (!empty($limitByDay) && isset($limitByDay[0]['SUM(`points`)']) && !empty($limitByDay[0]['SUM(`points`)']) && ($limitByDay[0]['SUM(`points`)'] >= 2250 || (floatval($limitByDay[0]['SUM(`points`)']) + floatval($this->request->data['howMany'])) >= 2250))
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous (ou le destinataire du transfert) avez dépassé le quota journalier de 2 250 ' . $this->Configuration->getMoneyName() . '.')));
+      // limit (3 transfer by users)s
+      $limitByDay = $this->PointsTransferHistory->find('count', array('conditions' => array(
+        'or' => array(
+          'user_id' => array($to, $this->User->getKey('id')),
+          'author_id' => array($to, $this->User->getKey('id'))
+        ),
+        "created LIKE '" . date('Y-m-d') . "%'"
+      )));
+      if (!empty($limitByDay) && $limitByDay >= 3)
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas effectuer plus de 3 transfert de points le même jour avec le même destinataire.')));
 
       // find current user
       $this->User->cacheQueries = false;
@@ -477,6 +500,8 @@ class UserController extends ObsiAppController {
       $how = floatval($this->request->data['howMany']);
       if ($how <= 0)
         return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__USER_POINTS_TRANSFER_ERROR_EMPTY'))));
+      if ($how >= 2250) // limit by day
+        return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous ne pouvez pas envoyer plus de 2 250 ' . $this->Configuration->getMoneyName() . ' par jour.')));
       $moneyUser = floatval($user['User']['money']) - $how;
       if ($moneyUser < 0)
         return $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('SHOP__BUY_ERROR_NO_ENOUGH_MONEY'))));
