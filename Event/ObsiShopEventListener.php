@@ -23,6 +23,26 @@ class ObsiShopEventListener implements CakeEventListener {
       $this->controller->set('sendPointsState', empty($check));
     }
 
+    if ($this->controller->params['controller'] == 'shop' && $this->controller->params['action'] == 'index' && $this->controller->params['plugin'] == 'shop') {
+      // Check if he can see shop (already connected to launcher + logged)
+      if (!$this->controller->isConnected)
+        return $this->controller->set('canViewShop', false);
+      // Check launcher logs
+      App::uses('ConnectionManager', 'Model');
+      $con = new ConnectionManager;
+      try {
+        ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
+      } catch (Exception $e) {
+        $this->controller->log('Error: '.$e->getMessage());
+        return $this->controller->set('canViewShop', true);
+      }
+      $dbUtil = $con->getDataSource('Util');
+      $launcherConnectionLogs = $dbUtil->query("SELECT * FROM loginlogs WHERE username = '{$this->controller->User->getKey('pseudo')}' ORDER BY id DESC");
+      if (empty($launcherConnectionLogs))
+        return $this->controller->set('canViewShop', false);
+      $this->controller->set('canViewShop', true); // he can
+    }
+
     if ($this->controller->params['controller'] != 'PaymentPage' || $this->controller->params['action'] != 'addCredit' || $this->controller->params['plugin'] != 'ShopPlus')
       return;
     $this->controller->loadModel('Shop.PaypalHistory');
