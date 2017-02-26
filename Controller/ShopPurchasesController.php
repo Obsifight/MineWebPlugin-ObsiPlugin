@@ -55,6 +55,7 @@ class ShopPurchasesController extends ObsiAppController {
 //  - Paypal
 //  - Stripe
 //  - Paymill
+//  - HipayWallet
 //  - Paysafecard
 // Utilisateur (Pseudo/ID)
 // Points crédités
@@ -127,6 +128,29 @@ class ShopPurchasesController extends ObsiAppController {
         'type' => 'Paymill',
         'user' => $payment['User']['pseudo'] . ' (ID: ' . $payment['User']['id'] . ')',
         'credits' => $payment['PaymillHistory']['credits'],
+        'amount_gross' => $amount_gross,
+        'fees' => $fees,
+        'amount_net' => $amount_gross - $fees
+      );
+    }
+
+    /* =====
+      HIPAY WALLET
+    ======== */
+    $this->loadModel('ShopPlus.HipayWalletHistory');
+    $findPaymillPayments = $this->HipayWalletHistory->find('all', array('recursive' => 1, 'conditions' => array('HipayWalletHistory.created >=' => $rangeStart, 'HipayWalletHistory.created <=' => $rangeEnd)));
+    foreach ($findPaymillPayments as $payment) { // for each payment
+      // calcul fees
+      $amount_gross = $payment['HipayWalletHistory']['amount'];
+      $fees = (2 / 100) * $amount_gross; // 2%
+      $fees += 0.25; // + 0.25 ctes
+      $fees = round($fees, 2);
+      // push into result array
+      $payments[] = array(
+        'date' => $payment['HipayWalletHistory']['created'],
+        'type' => 'HipayWallet',
+        'user' => $payment['User']['pseudo'] . ' (ID: ' . $payment['User']['id'] . ')',
+        'credits' => $payment['HipayWalletHistory']['credits'],
         'amount_gross' => $amount_gross,
         'fees' => $fees,
         'amount_net' => $amount_gross - $fees
