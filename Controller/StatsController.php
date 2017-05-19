@@ -155,8 +155,8 @@ class StatsController extends ObsiAppController {
       ConnectionManager::create('Auth', Configure::read('Obsi.db.Auth'));
       $db = $con->getDataSource('Auth');
 
-      $registeredUsersOnV6 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v6=1')[0][0]['COUNT(user_id)'];
-      $connectedUsersOnV6 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v6=1')[0][0]['COUNT(user_id)'];
+      $registeredUsersOnV7 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE is_register_v7=1')[0][0]['COUNT(user_id)'];
+      $connectedUsersOnV7 = $db->fetchAll('SELECT COUNT(user_id) FROM joueurs WHERE has_connected_v7=1')[0][0]['COUNT(user_id)'];
       $registeredUsersThisWeek = $this->User->find('count', array(
         'conditions' => array(
           'AND' => array(
@@ -166,15 +166,15 @@ class StatsController extends ObsiAppController {
         )
       ));
 
-      Cache::write('stats-users', array($registersUsers, $registeredUsersOnV6, $connectedUsersOnV6, $registeredUsersThisWeek), 'data-short');
+      Cache::write('stats-users', array($registersUsers, $registeredUsersOnV7, $connectedUsersOnV7, $registeredUsersThisWeek), 'data-short');
     } else {
-      list($registersUsers, $registeredUsersOnV6, $connectedUsersOnV6, $registeredUsersThisWeek) = Cache::read('stats-users', 'data-short');
+      list($registersUsers, $registeredUsersOnV7, $connectedUsersOnV7, $registeredUsersThisWeek) = Cache::read('stats-users', 'data-short');
     }
 
     $totalUsers = $usersRegistered;
 
-    $percentageRegisteredUsersOnV6 = round(( $registeredUsersOnV6 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
-    $percentageConnectedUsersOnV6 = round(( $connectedUsersOnV6 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+    $percentageRegisteredUsersOnV7 = round(( $registeredUsersOnV7 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
+    $percentageConnectedUsersOnV7 = round(( $connectedUsersOnV7 * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
     $percentageRegisteredUsersThisWeek = round(( $registeredUsersThisWeek * 100 / $totalUsers ), 2, PHP_ROUND_HALF_UP);
 
 
@@ -187,8 +187,8 @@ class StatsController extends ObsiAppController {
       'usersOnlines',
       'usersRegistered',
       'playersMaxAmount',
-      'percentageRegisteredUsersOnV6',
-      'percentageConnectedUsersOnV6',
+      'percentageRegisteredUsersOnV7',
+      'percentageConnectedUsersOnV7',
       'percentageRegisteredUsersThisWeek',
       'registersUsers',
       'onlinePlayers',

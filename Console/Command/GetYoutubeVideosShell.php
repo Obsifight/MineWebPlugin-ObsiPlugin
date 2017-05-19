@@ -3,7 +3,7 @@ class GetYoutubeVideosShell extends AppShell {
 
   public $uses = array('User', 'Obsi.YoutubeChannel', 'Obsi.YoutubeVideo'); //Models
   private $developer_key = 'AIzaSyCZCZOTBbcY-W183Yk2sC6DAgvHP5doA08';
-  private $versionOpenDate = '2017-01-07 17:00:00';
+  private $versionOpenDate = '2017-05-20 15:00:00';
 
   public function main() {
     $this->out('Start get youtubes videos...');

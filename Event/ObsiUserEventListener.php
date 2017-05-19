@@ -238,11 +238,21 @@ class ObsiUserEventListener implements CakeEventListener {
         YouTuber
       */
       $this->controller->loadModel('Obsi.YoutubeChannel');
-      $findYoutubeChannel = $this->controller->YoutubeChannel->find('all', array('conditions' => array('user_id' => $this->controller->User->getKey('id'))));
+      $findYoutubeChannel = $this->controller->YoutubeChannel->find('first', array('conditions' => array('user_id' => $this->controller->User->getKey('id'))));
       if (!empty($findYoutubeChannel))
         $youtuber = true;
       else
         $youtuber = false;
+
+      /*
+        Twitter
+      */
+      $this->controller->loadModel('Obsi.UsersTwitter');
+      $findTwitterAccount = $this->controller->UsersTwitter->find('first', array('conditions' => array('user_id' => $this->controller->User->getKey('id'))));
+      if (!empty($findTwitterAccount))
+        $twitter = $findTwitterAccount['UsersTwitter'];
+      else
+        $twitter = false;
 
       /*
         Skins & capes
@@ -267,7 +277,7 @@ class ObsiUserEventListener implements CakeEventListener {
         $con = new ConnectionManager;
         ConnectionManager::create('Util', Configure::read('Obsi.db.Util'));
         $db = $con->getDataSource('Util');
-        $launcherConnectionLogs = $db->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC');
+        $launcherConnectionLogs = $db->query('SELECT * FROM loginlogs WHERE username=\''.$user['pseudo'].'\' ORDER BY id DESC LIMIT 30');
 
         Cache::write('connection_'.$user['id'], $launcherConnectionLogs, 'launcherlogs');
       } else {
@@ -277,7 +287,7 @@ class ObsiUserEventListener implements CakeEventListener {
       ModuleComponent::$vars['launcherConnectionLogs'] = $launcherConnectionLogs;
 
       $ConnectionLogModel = ClassRegistry::init('Obsi.ConnectionLog');
-      $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc', 'conditions' => array('user_id' => $user['id'])));
+      $webConnectionLogs = $ConnectionLogModel->find('all', array('order' => 'id desc', 'conditions' => array('user_id' => $user['id']), 'limit' => 30));
       ModuleComponent::$vars['webConnectionLogs'] = $webConnectionLogs;
 
       /*
@@ -366,7 +376,8 @@ class ObsiUserEventListener implements CakeEventListener {
         'isNotConnected',
         'havePrize',
         'prize',
-        'youtuber'
+        'youtuber',
+        'twitter'
       ));
 
       /*
@@ -434,7 +445,7 @@ class ObsiUserEventListener implements CakeEventListener {
       $password = $event->data['data']['password'];
 
     // On va l'insérer
-      $db->fetchAll('INSERT INTO `joueurs`( `profileid`, `user_pseudo`, `user_mdp`, `is_register_v6`) VALUES (:profileid,:user_pseudo,:user_mdp, 1)', array(
+      $db->fetchAll('INSERT INTO `joueurs`( `profileid`, `user_pseudo`, `user_mdp`, `is_register_v7`) VALUES (:profileid,:user_pseudo,:user_mdp, 1)', array(
         'profileid' => $profileid,
         'user_pseudo' => $pseudo,
         'user_mdp' => $password

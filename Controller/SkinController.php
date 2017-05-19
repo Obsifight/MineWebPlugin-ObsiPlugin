@@ -31,7 +31,7 @@ class SkinController extends ObsiAppController {
         $filename = Configure::read('ObsiPlugin.skins.upload.filename');
         $filename = str_replace('{PLAYER}', $this->User->getKey('pseudo'), $filename);
 
-        if(!ftp_put($conn_id, $filename, $tmp_name, FTP_ASCII)) {
+        if(!@ftp_put($conn_id, $filename, $tmp_name, FTP_ASCII)) {
           echo json_encode(array('statut' => false, 'msg' => $this->Lang->get('FORM__ERROR_WHEN_UPLOAD')));
           exit;
         }
@@ -62,7 +62,7 @@ class SkinController extends ObsiAppController {
       $filename = Configure::read('ObsiPlugin.skins.upload.filename');
       $filename = str_replace('{PLAYER}', $this->User->getKey('pseudo'), $filename);
 
-      if(!ftp_delete($conn_id, $filename)) {
+      if(!@ftp_delete($conn_id, $filename)) {
         $this->Session->setFlash('Erreur lors de la suppression.', 'default.error');
         $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
       }

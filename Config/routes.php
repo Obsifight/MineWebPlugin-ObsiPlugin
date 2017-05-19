@@ -54,3 +54,7 @@ Router::connect('/user/google-auth', array('controller' => 'google', 'action' =>
 Router::connect('/user/youtube/videos', array('controller' => 'google', 'action' => 'manageVideos', 'plugin' => 'obsi'));
 Router::connect('/user/youtube/videos/remuneration/:id', array('controller' => 'google', 'action' => 'remuneration', 'plugin' => 'obsi'));
 Router::connect('/admin/youtube/videos/remuneration/', array('controller' => 'google', 'action' => 'history', 'plugin' => 'obsi', 'prefix' => 'admin'));
+
+Router::connect('/user/twitter/link', array('controller' => 'twitter', 'action' => 'link', 'plugin' => 'obsi'));
+Router::connect('/user/twitter/link/success', array('controller' => 'twitter', 'action' => 'linked', 'plugin' => 'obsi'));
+Router::connect('/user/twitter/link/notification', array('controller' => 'twitter', 'action' => 'notification', 'plugin' => 'obsi'));

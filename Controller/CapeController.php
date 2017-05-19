@@ -62,7 +62,7 @@ class CapeController extends ObsiAppController {
       $filename = Configure::read('ObsiPlugin.capes.upload.filename');
       $filename = str_replace('{PLAYER}', $this->User->getKey('pseudo'), $filename);
 
-      if(!ftp_delete($conn_id, $filename)) {
+      if(!@ftp_delete($conn_id, $filename)) {
         $this->Session->setFlash('Erreur lors de la suppression.', 'default.error');
         $this->redirect(array('controller' => 'user', 'action' => 'profile', 'plugin' => false));
       }
