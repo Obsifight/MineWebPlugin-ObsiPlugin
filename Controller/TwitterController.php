@@ -14,8 +14,7 @@ class TwitterController extends ObsiAppController {
     $notification = urlencode(Router::url(array('action' => 'notification'), true));
 
     // Redirect user&notification=$notification
-    //$this->redirect("http://api.obsifight.net/socials/twitter/authorization/request?userId=$userId&authKey=$authKey&callback=$callback&notification=$notification");
-    $this->redirect("http://localhost:8080/socials/twitter/authorization/request?userId=$userId&authKey=$authKey&callback=$callback&notification=$notification");
+    $this->redirect("http://api.obsifight.net/socials/twitter/authorization/request?userId=$userId&authKey=$authKey&callback=$callback&notification=$notification");
   }
 
   public function notification() {
