@@ -147,7 +147,7 @@ class RefundV7Shell extends AppShell {
       /*
         === Historique de remboursement lors V6 ===
       */
-      $findAddedPointsOnV6Refunds = $bdd_V6->fetchAll('SELECT added_money FROM obsi__refund_histories WHERE user_id = ?', array($user_id));
+  /*    $findAddedPointsOnV6Refunds = $bdd_V6->fetchAll('SELECT added_money FROM obsi__refund_histories WHERE user_id = ?', array($user_id));
       if (!empty($findAddedPointsOnV6Refunds)) {
         $added_money = floatval($findAddedPointsOnV6Refunds[0]['obsi__refund_histories']['added_money']);
         $user_added_money += $added_money;
@@ -157,7 +157,7 @@ class RefundV7Shell extends AppShell {
       } else {
         $this->out('    Aucun remboursement trouvé lors de la V6');
       }
-
+  */
       /*
         === Historique d'achats parmis $items lors de la V6 ===
       */
@@ -223,10 +223,10 @@ class RefundV7Shell extends AppShell {
 
 		$this->out("\n\n");
 		$this->out('Time: '.(microtime(true)-$time).' sec.');
-    $this->out('Total remboursé des précédentes versions (V2, V3, V4, V5) : '.$refund_others_versions.' PB');
-    $this->out('Total utilisateurs remboursés des précédentes versions : '.$users_refund_others_versions);
-    $this->out('Total remboursé de cette version (V6) : '.($global_refund - $refund_others_versions).' PB');
-    $this->out('Total utilisateurs remboursés de cette version (V6) : '.($users_refunded - $users_refund_others_versions));
+    //$this->out('Total remboursé des précédentes versions (V2, V3, V4, V5) : '.$refund_others_versions.' PB');
+    //$this->out('Total utilisateurs remboursés des précédentes versions : '.$users_refund_others_versions);
+    //$this->out('Total remboursé de cette version (V6) : '.($global_refund - $refund_others_versions).' PB');
+    //$this->out('Total utilisateurs remboursés de cette version (V6) : '.($users_refunded - $users_refund_others_versions));
     $this->out('Total utilisateurs remboursés : '.$users_refunded);
 		$this->out('Total remboursé : '.$global_refund.' PB');
 
