@@ -18,7 +18,6 @@ class TwitterController extends ObsiAppController {
   }
 
   public function notification() {
-    die('yo');
     $this->autoRender = false;
     // check request
     if (!$this->request->is('post'))
