@@ -71,9 +71,51 @@ class RefundController extends ObsiAppController {
             die('Impossible de se connecter à la base de données V5 !');
             return;
           }
+          try
+          {
+            $bdd_V6 = new PDO("mysql:host=localhost;dbname=web_v6", "web", "mpV59xL3");
+            $bdd_V6->exec("SET NAMES utf8");
+          }
+          catch (Exception $e)
+          {
+            die('Impossible de se connecter à la base de données V6 !');
+            return;
+          }
 
         /*
-          On cherche les achats V4
+          On cherche les achats V6
+        */
+
+          $playerItemsV6 = array();
+
+          $refundInV6 = $bdd_V6->prepare("SELECT id FROM obsi__refund_histories WHERE user_id=:user_id LIMIT 1");
+          $refundInV6->execute(array('user_id' => $searchUser['User']['id']));
+          $refundInV6 = $refundInV6->fetch();
+          $refundInV6 = (!empty($refundInV6));
+
+          $findPlayerHistoriesInV6 = $bdd_V6->prepare("SELECT item_id FROM shop__items_buy_histories WHERE user_id=:user_id");
+          $findPlayerHistoriesInV6->execute(array('user_id' => $searchUser['User']['id']));
+          $findPlayerHistoriesInV6 = $findPlayerHistoriesInV6->fetchAll();
+
+          foreach ($findPlayerHistoriesInV6 as $key => $value) { // On parcours ses achats
+
+            $findItem = $bdd_V6->prepare('SELECT name,price FROM shop__items WHERE id=:item_id LIMIT 1');
+            $findItem->execute(array('item_id' => $value['item_id']));
+            $findItem = $findItem->fetch();
+            if(!empty($findItem)) { // Si on trouve l'article acheté
+
+              $playerItemsV6[] = $findItem;
+
+            }
+            unset($findItem);
+
+
+          }
+          unset($key);
+          unset($value);
+
+        /*
+          On cherche les achats V5
         */
 
           $playerItemsV5 = array();
@@ -213,7 +255,9 @@ class RefundController extends ObsiAppController {
           'refunded',
           'refundedPB',
           'playerItemsV5',
-          'refundInV5'
+          'refundInV5',
+          'playerItemsV6',
+          'refundInV6'
         ));
 
 
