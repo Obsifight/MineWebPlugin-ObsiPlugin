@@ -23,13 +23,16 @@ class GetYoutubeVideosShell extends AppShell {
       $findRelatedPlaylists = $youtube->channels->listChannels('contentDetails', array(
         'id' => $channel_id
       ));
-      $uploadsPlaylistId = $findRelatedPlaylists->getItems()[0]->getContentDetails()->getRelatedPlaylists()->uploads;
-      $this->out('  Uploads playlist id finded: '.$uploadsPlaylistId);
-      // get uploads list
-      $uploads = $this->getUploadsFromUploadsPlaylist($uploadsPlaylistId, $channel_id, $youtube);
-      // set into database
-      if (!empty($uploads))
-        $this->YoutubeVideo->saveAll($uploads);
+      $items = $findRelatedPlaylists->getItems();
+      if (!empty($items) && isset($items[0])) {
+        $uploadsPlaylistId = $items[0]->getContentDetails()->getRelatedPlaylists()->uploads;
+        $this->out('  Uploads playlist id finded: '.$uploadsPlaylistId);
+        // get uploads list
+        $uploads = $this->getUploadsFromUploadsPlaylist($uploadsPlaylistId, $channel_id, $youtube);
+        // set into database
+        if (!empty($uploads))
+          $this->YoutubeVideo->saveAll($uploads);
+      }
     }
   }
 
