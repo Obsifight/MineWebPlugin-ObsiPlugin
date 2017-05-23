@@ -24,7 +24,7 @@ class GetYoutubeVideosShell extends AppShell {
         'id' => $channel_id
       ));
       $items = $findRelatedPlaylists->getItems();
-      if (!empty($items) && isset($items[0])) {
+      if (!empty($items) && isset($items[0]) && method_exists($items[0], 'getContentDetails')) {
         $uploadsPlaylistId = $items[0]->getContentDetails()->getRelatedPlaylists()->uploads;
         $this->out('  Uploads playlist id finded: '.$uploadsPlaylistId);
         // get uploads list
