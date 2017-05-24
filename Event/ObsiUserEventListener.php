@@ -553,7 +553,7 @@ class ObsiUserEventListener implements CakeEventListener {
           }
 
         // On vérifie qu'il a pas déjà changé de pseudo 2 fois
-          $count = $this->PseudoUpdateHistory->find('count', array('conditions' => array('user_id' => $user_id)));
+          $count = $this->PseudoUpdateHistory->find('count', array('conditions' => array('user_id' => $user_id, 'created' => '>= '.date('Y-m-d H:i:s', strtotime('-3 months')))));
           if($count >= 2) {
             echo json_encode(array('statut' => false, 'msg' => 'Vous avez déjà acheté un changement de pseudo 2 fois !'));
 
