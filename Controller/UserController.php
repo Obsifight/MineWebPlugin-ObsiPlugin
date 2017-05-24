@@ -481,7 +481,7 @@ class UserController extends ObsiAppController {
       $limitByDay = $this->PointsTransferHistory->find('count', array('conditions' => array(
         //'or' => array(
           'user_id' => array($to, $this->User->getKey('id')),
-          'author_id' => array($to, $this->User->getKey('id'))
+          'author_id' => array($to, $this->User->getKey('id')),
         //),
         "created LIKE '" . date('Y-m-d') . "%'"
       )));
