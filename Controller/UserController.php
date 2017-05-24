@@ -479,10 +479,10 @@ class UserController extends ObsiAppController {
         return $this->response->body(json_encode(array('statut' => false, 'msg' => 'Vous (ou le destinataire du transfert) avez dépassé le quota journalier de 2 250 ' . $this->Configuration->getMoneyName() . '.')));
       // limit (3 transfer by users)s
       $limitByDay = $this->PointsTransferHistory->find('count', array('conditions' => array(
-        'or' => array(
+        //'or' => array(
           'user_id' => array($to, $this->User->getKey('id')),
           'author_id' => array($to, $this->User->getKey('id'))
-        ),
+        //),
         "created LIKE '" . date('Y-m-d') . "%'"
       )));
       if (!empty($limitByDay) && $limitByDay >= 3)
